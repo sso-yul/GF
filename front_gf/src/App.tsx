@@ -1,20 +1,24 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import axios from 'axios';
+import { getTest } from "./api/api.test"
 
 function App() {
+    
     const [test, setTest] = useState("");
 
     useEffect(() => {
-        axios.get("/api/test")
-        .then(response => setTest(response.data))
-        .catch(error => console.log(error))
+        getTest().then(data => setTest(data));
     }, []);
+
     return (
         <>
             {test}
+            <div className="redDiv">
+                red~
+            </div>
         </>
     )
+
 }
 
 export default App
