@@ -1,9 +1,6 @@
-package com.sol.gf.domain.image;
+package com.sol.gf.domain.img;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,11 +11,16 @@ import lombok.NoArgsConstructor;
 public class ImgEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long img_no;
 
+    @Column(nullable = false)
     private String img_type;  // 예: "image/png"
+
+    @Column(nullable = false)
     private String img_path;
 
     @Lob
+    @Column(nullable = false)
     private byte[] img;
 }
