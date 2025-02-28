@@ -17,6 +17,7 @@ public class ImgEntity {
     private Long img_no;
 
     private String img_type;  // 예: "image/png"
+    private String img_path;
 
     @Lob
     private byte[] img;
