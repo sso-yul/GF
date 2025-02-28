@@ -1,5 +1,6 @@
 package com.sol.gf.domain.user;
 
+import com.sol.gf.domain.image.ImgEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,6 @@ public class UserEntity {
     private LocalDateTime user_create_time;
 
     @OneToOne
-    @JoinColumn(name = "user_img")
-    private String user_img;
+    @JoinColumn(name = "user_img", referencedColumnName = "img_no")
+    private ImgEntity user_img;
 }
