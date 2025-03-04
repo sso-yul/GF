@@ -15,15 +15,15 @@ public class RefreshTokenEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long token_id;
+    private Long tokenId;
 
     @Column(nullable = false)
-    private String refresh_token;
+    private String refreshToken;
 
     @Column(nullable = false)
-    private LocalDateTime expire_time;
+    private LocalDateTime expireTime;
 
-    private LocalDateTime create_at;
+    private LocalDateTime createAt;
 
     @OneToOne
     @JoinColumn(name = "user_no", referencedColumnName = "user_no")

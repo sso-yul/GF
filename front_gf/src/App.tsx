@@ -1,24 +1,29 @@
-import { useEffect, useState } from 'react'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './App.css'
-import { getTest } from "./api/api.test"
+
+import Layout from "./routers/Layout"
+import Signin from "./routers/pages/signin/Signin";
+import Signup from "./routers/pages/signup/Signup";
+
+const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <Layout />,
+        children: [
+            {
+                path: "/signin",
+                element: <Signin />
+            },
+            {
+                path: "/signup",
+                element: <Signup />
+            }
+        ]
+    }
+])
 
 function App() {
-    
-    const [test, setTest] = useState("");
-
-    useEffect(() => {
-        getTest().then(data => setTest(data));
-    }, []);
-
-    return (
-        <>
-            {test}
-            <div className="redDiv">
-                red~
-            </div>
-        </>
-    )
-
+    return <RouterProvider router={router} />;
 }
 
 export default App

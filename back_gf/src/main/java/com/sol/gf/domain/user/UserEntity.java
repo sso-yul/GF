@@ -1,16 +1,10 @@
 package com.sol.gf.domain.user;
 
-import com.sol.gf.domain.authority.AuthorityEntity;
 import com.sol.gf.domain.img.ImgEntity;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @ToString
 @Getter
@@ -24,26 +18,37 @@ public class UserEntity {
     private long user_no;
 
     @Column(nullable = false)
-    private String user_id;
+    private String userId;
 
     @Column(nullable = false)
-    private String user_name;
+    private String userEmail;
 
     @Column(nullable = false)
-    private String user_password;
+    private String userName;
 
     @Column(nullable = false)
-    private LocalDateTime user_create_time;
+    private String userPassword;
+
+    @Column(nullable = false)
+    private LocalDateTime userCreateTime;
+
+    @Column(nullable = false)
+    @JoinColumn(name = "user_roles", referencedColumnName = "roles_id")
+    private int userRoles;
 
     @OneToOne
     @JoinColumn(name = "user_img", referencedColumnName = "img_no")
-    private ImgEntity user_img;
+    private ImgEntity userImg;
 
-    @OneToMany(mappedBy = "user_no", fetch = FetchType.EAGER)
-    private List<AuthorityEntity> roles = new ArrayList<>();
-
-    public void setRoles(List<AuthorityEntity> role) {
-        this.roles = role;
-        role.forEach(o -> o.setAuthority_id(this));
+    @Builder
+    public UserEntity(String userId, String userName, String userPassword, String userEmail,
+                      LocalDateTime userCreateTime, int userRoles, ImgEntity userImg) {
+        this.userId = userId;
+        this.userName = userName;
+        this.userPassword = userPassword;
+        this.userEmail = userEmail;
+        this.userCreateTime = userCreateTime;
+        this.userRoles = userRoles;
+        this.userImg = userImg;
     }
 }
