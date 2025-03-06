@@ -13,7 +13,7 @@ public class UserDto {
     private String userNo;
     private String userId;
     private String userEmail;
-    private String userPassword;
     private String userName;
     private String userImg;
+    private String rawPassword;
 }

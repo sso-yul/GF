@@ -2,6 +2,8 @@ package com.sol.gf.domain.refreshToken;
 
 import com.sol.gf.domain.user.UserEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +11,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tb_refresh_token")
 public class RefreshTokenEntity {
@@ -26,7 +30,7 @@ public class RefreshTokenEntity {
     private LocalDateTime createAt;
 
     @OneToOne
-    @JoinColumn(name = "user_no", referencedColumnName = "user_no")
+    @JoinColumn(name = "user_no")
     private UserEntity user;
 
 

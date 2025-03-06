@@ -7,5 +7,5 @@ import java.util.Optional;
 
 @Repository
 public interface RolesRepository extends JpaRepository<RolesEntity, Long> {
-    Optional<RolesEntity> findByRolesNo(int rolesNo);
+    Optional<RolesEntity> findByRolesNo(long rolesNo);
 }

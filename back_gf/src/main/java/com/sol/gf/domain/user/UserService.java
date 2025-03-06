@@ -17,10 +17,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RolesRepository rolesRepository;
 
-
-    // 회원가입
+    // 회원 가입
     @Transactional
-    public UserDto createUser(UserDto userDto, String rawPassword) {
+    public UserDto createUser(UserDto userDto) {
         userRepository.findByUserId(userDto.getUserId())
                 .ifPresent(user -> {
                     throw new IllegalStateException("이미 사용 중인 아이디입니다.");
@@ -31,28 +30,32 @@ public class UserService {
                     throw new IllegalStateException("이미 사용 중인 이메일입니다.");
                 });
 
-        RolesEntity userRole = rolesRepository.findByRolesNo(3)
-                .orElseThrow(() -> new IllegalStateException("해당 역할을 찾을 수 없습니다."));
+        userRepository.findByUserName(userDto.getUserName())
+                .ifPresent(user -> {
+                    throw new IllegalStateException("이미 사용 중인 이름입니다.");
+                });
+
+        RolesEntity defaultRole = rolesRepository.findByRolesNo(4).orElse(null);
 
         UserEntity newUser = UserEntity.builder()
                 .userId(userDto.getUserId())
                 .userName(userDto.getUserName())
-                .userPassword(passwordEncoder.encode(rawPassword))
+                .userPassword(passwordEncoder.encode(userDto.getRawPassword()))
                 .userEmail(userDto.getUserEmail())
                 .userCreateTime(LocalDateTime.now())
-                .userRoles((int) userRole.getRolesNo())
+                .userRoles(defaultRole)
                 .userImg(null)
                 .build();
 
         UserEntity savedUser = userRepository.save(newUser);
 
-        return new UserDto(
-                String.valueOf(savedUser.getUser_no()),
-                savedUser.getUserId(),
-                savedUser.getUserEmail(),
-                null,
-                savedUser.getUserName(),
-                null
-        );
+        return UserDto.builder()
+                .userNo(String.valueOf(savedUser.getUserNo()))
+                .userId(savedUser.getUserId())
+                .userEmail(savedUser.getUserEmail())
+                .userName(savedUser.getUserName())
+                .userImg(null)
+                .rawPassword(null)
+                .build();
     }
 }

@@ -1,31 +1,68 @@
 package com.sol.gf.security.jwt;
 
-import com.sol.gf.domain.roles.RolesEntity;
-import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Date;
-import java.util.List;
-import java.util.function.Function;
 
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class JwtUtil {
+
+    private SecretKey key;
 
     @Value("${jwt.secret}")
     private String secretKey;
 
+    @Value("${jwt.expiration}")
+    private long expirationTime;
+
+    @Value("${jwt.issuer}")
+    private String issuer;
+
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String generateToken(String userName) {
+        return Jwts.builder()
+                .subject(userName)
+                .issuer(issuer)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(key)
+                .compact();
+    }
+
+    public String getUserIdFromJwt(String token) {
+        try {
+            return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().getSubject();
+        } catch (JwtException e) {
+            log.error("JWT 토큰 파싱 오류", e);
+            return null;
+        }
+    }
+
+    public String validateToken(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
+        } catch (JwtException e) {
+            log.error("JWT 토큰 검증 오류", e);
+            return null;
+        }
+    }
 }

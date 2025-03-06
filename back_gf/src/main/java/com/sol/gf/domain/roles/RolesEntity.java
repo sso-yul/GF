@@ -1,10 +1,8 @@
 package com.sol.gf.domain.roles;
 
-import com.sol.gf.domain.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -13,8 +11,10 @@ import lombok.Setter;
 public class RolesEntity {
 
     @Id
+    @Column(name = "roles_no")
     private long rolesNo;
 
     @Column(nullable = false)
     private String rolesName;
+
 }

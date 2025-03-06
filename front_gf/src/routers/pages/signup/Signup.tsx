@@ -1,50 +1,42 @@
-import React, { useState, ChangeEvent } from "react";
-import axios from "axios";
+import { useState, ChangeEvent } from "react";
+import { singup } from "../../../api/api.user";
 
 // 사용자 입력 타입 정의
 interface UserData {
     userName: string;
     userEmail: string;
     userId: string;
-    password: string;
+    rawPassword: string;
 }
 
 export default function Signup() {
-    // 사용자 입력 상태
     const [userData, setUserData] = useState<UserData>({
         userName: "",
         userEmail: "",
         userId: "",
-        password: ""
+        rawPassword: ""
     });
 
-    // 에러 및 성공 메시지 상태
     const [error, setError] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
 
-    // 입력값 변화 처리 함수
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setUserData({ ...userData, [name]: value });
     };
 
-    // 회원가입 처리 함수
     const handleSignup = async () => {
         try {
-            // 회원가입 API 호출
-            const response = await axios.post("/api/user/signup", {
+            await singup({
                 userId: userData.userId,
                 userName: userData.userName,
                 userEmail: userData.userEmail,
-                password: userData.password,
+                rawPassword: userData.rawPassword,
             });
-
-            // 성공 시 메시지 처리
-            setSuccessMessage("회원가입이 성공적으로 완료되었습니다.");
+            setSuccessMessage("회원가입 성공");
             setError("");
         } catch (err: any) {
-            // 에러 처리
-            setError("회원가입 실패: " + (err.response?.data || err.message));
+            setError("회원가입 실패: " + (err.message || err));
             setSuccessMessage("");
         }
     };
@@ -86,16 +78,16 @@ export default function Signup() {
                 비밀번호:
                 <input
                     type="password"
-                    name="password"
-                    value={userData.password}
+                    name="rawPassword"
+                    value={userData.rawPassword}
                     onChange={handleChange}
                     required
                 />
             </p>
             <button onClick={handleSignup}>회원가입</button>
 
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+            {error && <p style={{ color: "red" }}>{error}</p>}
+            {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
         </div>
     );
 }

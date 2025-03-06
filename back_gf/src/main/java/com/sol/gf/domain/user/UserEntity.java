@@ -1,6 +1,7 @@
 package com.sol.gf.domain.user;
 
 import com.sol.gf.domain.img.ImgEntity;
+import com.sol.gf.domain.roles.RolesEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,7 +16,7 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long user_no;
+    private long userNo;
 
     @Column(nullable = false)
     private String userId;
@@ -32,9 +33,9 @@ public class UserEntity {
     @Column(nullable = false)
     private LocalDateTime userCreateTime;
 
-    @Column(nullable = false)
-    @JoinColumn(name = "user_roles", referencedColumnName = "roles_id")
-    private int userRoles;
+    @ManyToOne
+    @JoinColumn(name = "user_roles", referencedColumnName = "roles_no")
+    private RolesEntity userRoles;
 
     @OneToOne
     @JoinColumn(name = "user_img", referencedColumnName = "img_no")
@@ -42,7 +43,7 @@ public class UserEntity {
 
     @Builder
     public UserEntity(String userId, String userName, String userPassword, String userEmail,
-                      LocalDateTime userCreateTime, int userRoles, ImgEntity userImg) {
+                      LocalDateTime userCreateTime, RolesEntity userRoles, ImgEntity userImg) {
         this.userId = userId;
         this.userName = userName;
         this.userPassword = userPassword;
