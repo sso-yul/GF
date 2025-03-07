@@ -1,7 +1,6 @@
 import { useState, ChangeEvent } from "react";
-import { singup } from "../../../api/api.user";
+import { singup } from "../../../api/api.sign";
 
-// 사용자 입력 타입 정의
 interface UserData {
     userName: string;
     userEmail: string;
@@ -43,7 +42,7 @@ export default function Signup() {
 
     return (
         <div className="signup-container">
-            <h2>회원가입</h2>
+            회원가입
             <p>
                 이름:
                 <input

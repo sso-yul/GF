@@ -13,7 +13,7 @@ public class SigninController {
 
     private final SigninService signinService;
 
-    @PostMapping("/api/user/signin")
+    @PostMapping("/api/sign/signin")
     public ResponseEntity<SigninResponse> signin(@RequestBody SigninRequest signinRequest) {
         SigninResponse signinResponse = signinService.signin(signinRequest.getUserId(), signinRequest.getRawPassword());
         return ResponseEntity.ok(signinResponse);

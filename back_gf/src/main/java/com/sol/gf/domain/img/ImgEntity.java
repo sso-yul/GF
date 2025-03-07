@@ -12,13 +12,14 @@ public class ImgEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long img_no;
+    @Column(name = "img_no")
+    private Long imgNo;
 
     @Column(nullable = false)
-    private String img_type;  // 예: "image/png"
+    private String imgType;  // 예: "image/png"
 
     @Column(nullable = false)
-    private String img_path;
+    private String imgPath;
 
     @Lob
     @Column(nullable = false)

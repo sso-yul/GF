@@ -1,5 +1,6 @@
 import { ChangeEvent, useState } from "react";
-import { signin } from "../../../api/api.signin";
+import { signin } from "../../../api/api.sign";
+import { setCookie } from "../../../api/api.cookie"
 
 interface SigninData {
     userId: string;
@@ -22,10 +23,10 @@ export default function Signin() {
 
     const handleSignin = async () => {
         try {
-            await signin({
-                userId: signinData.userId,
-                rawPassword: signinData.rawPassword,
-            });
+                await signin({
+                    userId: signinData.userId,
+                    rawPassword: signinData.rawPassword,
+                });
             setSuccessMessage("로그인 성공");
             setError("");
         } catch (err: any) {

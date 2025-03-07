@@ -25,6 +25,9 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private long expirationTime;
 
+    @Value("${jwt.refreshExpiration}")
+    private long refreshExpirationTime;
+
     @Value("${jwt.issuer}")
     private String issuer;
 
@@ -33,9 +36,11 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String userName) {
+    public String generateToken(String userId, String roles) {
         return Jwts.builder()
-                .subject(userName)
+                .subject(userId)
+                .claim("userId", userId)
+                .claim("roles", roles)
                 .issuer(issuer)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expirationTime))
@@ -43,11 +48,42 @@ public class JwtUtil {
                 .compact();
     }
 
+    public String generateRefreshToken(String userId, String roles) {
+        return Jwts.builder()
+                .subject(userId)
+                .claim("userId", userId)
+                .claim("roles", roles)
+                .issuer(issuer)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + refreshExpirationTime)) // 7일
+                .signWith(key)
+                .compact();
+    }
+
     public String getUserIdFromJwt(String token) {
         try {
-            return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().getSubject();
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
         } catch (JwtException e) {
-            log.error("JWT 토큰 파싱 오류", e);
+            log.error("JWT 토큰 오류", e);
+            return null;
+        }
+    }
+
+    public String getRolesFromJwt(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .get("roles", String.class);
+        } catch (JwtException e) {
+            log.error("JWT 토큰에서 roles 추출 오류", e);
             return null;
         }
     }

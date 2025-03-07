@@ -8,4 +8,5 @@ import lombok.Setter;
 public class SigninRequest {
     private String userId;
     private String rawPassword;
+    private String roles;
 }

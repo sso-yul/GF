@@ -14,7 +14,7 @@ public class UserController {
 
 
     // 회원 가입
-    @PostMapping("/api/user/signup")
+    @PostMapping("/api/sign/signup")
     public ResponseEntity<?> signup(@RequestBody UserDto userDto) {
         try {
             UserDto createdUser = userService.createUser(userDto);

@@ -2,7 +2,9 @@ package com.sol.gf.domain.signin;
 
 import com.sol.gf.domain.user.UserEntity;
 import com.sol.gf.domain.user.UserRepository;
+import com.sol.gf.security.jwt.JwtService;
 import com.sol.gf.security.jwt.JwtUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,7 +20,9 @@ public class SigninService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
 
+    @Transactional
     public SigninResponse signin(String userId, String rawPassword) {
         // 사용자 아이디로 사용자 검샑
         UserEntity user = userRepository.findByUserId(userId)
@@ -34,11 +38,13 @@ public class SigninService {
 
         try {
             // 인증을 수행하고, 인증 정보 반환
-            Authentication auth = authenticationManager.authenticate(authentication);
+            authenticationManager.authenticate(authentication);
 
-            String token = jwtUtil.generateToken(userId);
+            String roles = user.getUserRoles().getRolesName();
+            String token = jwtUtil.generateToken(userId, roles);
+            String refreshToken = jwtUtil.generateRefreshToken(userId, roles);
 
-            return new SigninResponse(token, userId, user.getUserName());
+            return new SigninResponse(token, userId, user.getUserName(), roles, refreshToken);
         } catch (AuthenticationException e) {
             throw new IllegalStateException("로그인 인증 실패: " + e.getMessage());
         }

@@ -19,6 +19,7 @@ public class RefreshTokenEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "token_id")
     private Long tokenId;
 
     @Column(nullable = false)
@@ -27,7 +28,7 @@ public class RefreshTokenEntity {
     @Column(nullable = false)
     private LocalDateTime expireTime;
 
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @OneToOne
     @JoinColumn(name = "user_no")
