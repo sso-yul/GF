@@ -5,9 +5,6 @@ import Layout from "./routers/Layout"
 import Signin from "./routers/pages/sign/Signin";
 import Signup from "./routers/pages/sign/Signup";
 import Signing from './routers/pages/sign/Signing';
-import { setupGlobalInterceptors } from './api/api';
-
-setupGlobalInterceptors();
 
 const router = createBrowserRouter([
     {

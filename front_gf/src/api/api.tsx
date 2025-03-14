@@ -29,7 +29,6 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     
-    // 토큰 만료 에러(401) 및 중복 요청 방지
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       
@@ -37,11 +36,13 @@ api.interceptors.response.use(
         // 새 토큰 발급
         const newToken = await refreshToken();
         
-        // 헤더 업데이트
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        
-        // 실패한 요청 재시도
-        return api(originalRequest);
+        // 토큰이 갱신되었으므로, 헤더를 업데이트
+        if (newToken) {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          
+          // 실패한 요청을 재시도
+          return api(originalRequest);
+        }
       } catch (refreshError) {
         // 리프레시 실패 시 로그아웃 처리
         removeCookie("gf_token");
