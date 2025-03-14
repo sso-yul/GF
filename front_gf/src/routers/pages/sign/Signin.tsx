@@ -1,6 +1,5 @@
 import { ChangeEvent, useState } from "react";
 import { signin } from "../../../api/api.sign";
-import { setCookie } from "../../../api/api.cookie"
 
 interface SigninData {
     userId: string;

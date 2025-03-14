@@ -1,5 +1,5 @@
 import { useState, ChangeEvent } from "react";
-import { singup } from "../../../api/api.sign";
+import { signup } from "../../../api/api.sign";
 
 interface UserData {
     userName: string;
@@ -26,7 +26,7 @@ export default function Signup() {
 
     const handleSignup = async () => {
         try {
-            await singup({
+            await signup({
                 userId: userData.userId,
                 userName: userData.userName,
                 userEmail: userData.userEmail,

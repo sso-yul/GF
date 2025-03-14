@@ -42,7 +42,7 @@ public class SigninService {
 
             String roles = user.getUserRoles().getRolesName();
             String token = jwtUtil.generateToken(userId, roles);
-            String refreshToken = jwtUtil.generateRefreshToken(userId, roles);
+            String refreshToken = jwtService.createRefreshToken(user);
 
             return new SigninResponse(token, userId, user.getUserName(), roles, refreshToken);
         } catch (AuthenticationException e) {

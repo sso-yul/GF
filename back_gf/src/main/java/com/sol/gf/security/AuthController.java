@@ -1,6 +1,8 @@
 package com.sol.gf.security;
 
 import com.sol.gf.domain.refreshToken.RefreshTokenRequest;
+import com.sol.gf.global.dto.ErrorResponse;
+import com.sol.gf.global.dto.TokenResponse;
 import com.sol.gf.security.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,15 +18,16 @@ public class AuthController {
     private final JwtService jwtService;
 
     @PostMapping("/api/auth/refresh")
-    public ResponseEntity<String> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest request) {
         try {
-            // 리프레시 토큰을 받아서 새로운 액세스 토큰을 생성
-            String newAccessToken = jwtService.refreshAccessToken(refreshTokenRequest.getRefreshToken(), refreshTokenRequest.getUserId());
-            return ResponseEntity.ok(newAccessToken); // 새로운 액세스 토큰 반환
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("리프레시 토큰이 만료되었습니다. 다시 로그인 해주세요.");
+            String newAccessToken = jwtService.refreshAccessToken(
+                    request.getRefreshToken(),
+                    request.getUserId()
+            );
+            return ResponseEntity.ok(new TokenResponse(newAccessToken));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("리프레시 토큰 갱신에 실패했습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ErrorResponse("토큰 갱신 실패: " + e.getMessage()));
         }
     }
 }

@@ -18,6 +18,7 @@ import java.util.Date;
 public class JwtUtil {
 
     private SecretKey key;
+    private SecretKey key2;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -34,6 +35,7 @@ public class JwtUtil {
     @PostConstruct
     public void init() {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        this.key2 = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateToken(String userId, String roles) {
@@ -56,14 +58,14 @@ public class JwtUtil {
                 .issuer(issuer)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + refreshExpirationTime)) // 7일
-                .signWith(key)
+                .signWith(key2)
                 .compact();
     }
 
     public String getUserIdFromJwt(String token) {
         try {
             return Jwts.parser()
-                    .verifyWith(key)
+                    .verifyWith(key2)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload()
@@ -88,17 +90,16 @@ public class JwtUtil {
         }
     }
 
-    public String validateToken(String token) {
+    public boolean validateToken(String token) {
         try {
-            return Jwts.parser()
+            Jwts.parser()
                     .verifyWith(key)
                     .build()
-                    .parseSignedClaims(token)
-                    .getPayload()
-                    .getSubject();
+                    .parseSignedClaims(token);
+            return true;
         } catch (JwtException e) {
             log.error("JWT 토큰 검증 오류", e);
-            return null;
+            return false;
         }
     }
 }

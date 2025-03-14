@@ -27,23 +27,35 @@ export const removeCookie = (name: string) => {
 
 export const refreshToken = async () => {
     try {
-        const response = await axios.post("/api/auth/refresh", {}, {
-            withCredentials: true // 쿠키 자동전달 허용
+        // 쿠키에서 리프레시 토큰 가져오기
+        const refreshToken = getCookie("gf_refresh_token");
+        const userId = getCookie("gf_user_id");
+        console.log("리프레시 토큰 갱신 중");
+        
+        if (!refreshToken || !userId) {
+            throw new Error("리프레시 토큰 또는 사용자 ID를 찾을 수 없습니다");
+        }
+        
+        const response = await axios.post("/api/auth/refresh", {
+            refreshToken,
+            userId
+        }, {
+            withCredentials: true
         });
 
         const newAccessToken = response.data.token;
 
-        // 새로운 Access Token을 쿠키에 저장
+        // 새 액세스 토큰 저장
         setCookie("gf_token", newAccessToken, {
             path: "/",
-            maxAge: 7 * 24 * 60 * 60 * 1000,
+            maxAge: 30 * 60, // 30분
             secure: false,
             sameSite: "strict",
         });
 
         return newAccessToken;
     } catch (error) {
-        console.error("토큰 만료 또는 오류 발생: ", error);
+        console.error("토큰 리프레시 실패: ", error);
         throw error;
     }
 };

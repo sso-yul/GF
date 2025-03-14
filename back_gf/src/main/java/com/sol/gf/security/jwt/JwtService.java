@@ -21,7 +21,7 @@ public class JwtService {
     public String createRefreshToken(UserEntity user) {
         refreshTokenRepository.deleteByUser(user);
         // 생성
-        String refreshToken = jwtUtil.generateToken(user.getUserId(), user.getUserRoles().getRolesName());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getUserId(), user.getUserRoles().getRolesName());
 
         // 만료시간
         LocalDateTime expireTime = LocalDateTime.now().plusDays(7);
@@ -39,9 +39,10 @@ public class JwtService {
     }
 
     public String refreshAccessToken(String refreshToken, String userId) {
-        String roles = jwtUtil.getRolesFromJwt(refreshToken);
+        // 리프레시 토큰 유효성 검증
+        String tokenUserId = jwtUtil.getUserIdFromJwt(refreshToken);
 
-        if (userId == null) {
+        if (tokenUserId == null || !tokenUserId.equals(userId)) {
             throw new IllegalStateException("리프레시 토큰이 유효하지 않습니다.");
         }
 
@@ -51,8 +52,23 @@ public class JwtService {
         if (refreshTokenEntity.getExpireTime().isBefore(LocalDateTime.now())) {
             throw new IllegalStateException("리프레시 토큰이 만료되었습니다.");
         }
+
+        String roles = jwtUtil.getRolesFromJwt(refreshToken);
+
         // 새로운 액세스 토큰 생성
         return jwtUtil.generateToken(userId, roles);
+    }
+
+    // 토큰 만료 확인 및 새 액세스 토큰 발급 메서드 - 지금은 클라이언트에서 해결 중이니 굳이 필요 없음
+    public String checkAndRefreshToken(String accessToken, String userId) {
+        if (!jwtUtil.validateToken(accessToken)) {
+            // 토큰이 유효하지 않으면 리프레시 토큰으로 새 액세스 토큰 발급
+            RefreshTokenEntity refreshTokenEntity = refreshTokenRepository.findByUser_UserId(userId)
+                    .orElseThrow(() -> new IllegalStateException("리프레시 토큰이 존재하지 않습니다."));
+
+            return refreshAccessToken(refreshTokenEntity.getRefreshToken(), userId);
+        }
+        return accessToken; // 유효하면 기존 토큰 반환
     }
 
 }

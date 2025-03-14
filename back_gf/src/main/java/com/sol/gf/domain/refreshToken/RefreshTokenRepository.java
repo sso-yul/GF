@@ -11,4 +11,6 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
     Optional<RefreshTokenEntity> findByTokenId(Long tokenId);
     Optional<RefreshTokenEntity> findByRefreshToken(String refreshToken);
     void deleteByUser(UserEntity user);
+    // userId로 리프레시 토큰을 찾는 메서드
+    Optional<RefreshTokenEntity> findByUser_UserId(String userId);
 }

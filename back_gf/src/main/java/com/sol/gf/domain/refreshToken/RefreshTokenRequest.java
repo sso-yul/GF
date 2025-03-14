@@ -1,14 +1,13 @@
 package com.sol.gf.domain.refreshToken;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class RefreshTokenRequest {
     private String refreshToken;
     private String userId;
