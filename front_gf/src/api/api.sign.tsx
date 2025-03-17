@@ -1,18 +1,6 @@
 import axios from "axios";
-import { setCookie } from "./api.cookie";
-
-interface SigninRequest {
-    userId: string;
-    rawPassword: string;
-}
-
-interface SigninResponse {
-    token: string;
-    userId: string;
-    userName: string;
-    roles: string;
-    refreshToken: string;
-}
+import { setCookie, removeCookie } from "./api.cookie";
+import { SigninRequest, SigninResponse } from "../stores/types";
 
 export const signin = async (signInData: SigninRequest): Promise<SigninResponse> => {
     try {
@@ -22,7 +10,7 @@ export const signin = async (signInData: SigninRequest): Promise<SigninResponse>
         // 액세스 토큰 저장
         setCookie("gf_token", token, {
             path: "/",
-            maxAge: 30 * 60, // 5분
+            maxAge: 30 * 60, // 30분
             secure: false, // 프로덕션 환경의 HTTPS에서는 true로 설정
             sameSite: "strict",
         });
@@ -52,20 +40,28 @@ export const signin = async (signInData: SigninRequest): Promise<SigninResponse>
 
 export const signup = async(userData: { userId: string; userName: string; userEmail: string; rawPassword: string }) => {
     try {
-            const response = await axios
-                        .post("/api/sign/signup", {
-                            userId: userData.userId,
-                            userName: userData.userName,
-                            userEmail: userData.userEmail,
-                            rawPassword: userData.rawPassword,
-                        });
-                        return response.data;
-        } catch (err: any) {
-            throw new Error(err.response?.data || err.message);
-        }
-                        
-}
+        const response = await axios.post("/api/sign/signup", {
+            userId: userData.userId,
+            userName: userData.userName,
+            userEmail: userData.userEmail,
+            rawPassword: userData.rawPassword,
+        });
+        return response.data;
+    } catch (err: any) {
+        throw new Error(err.response?.data || err.message);
+    }
+};
 
 export const signout = async (): Promise<void> => {
-    
-}
+    try {
+        // 백엔드에 로그아웃 요청 (필요한 경우)
+        await axios.post("/api/sign/signout");
+    } catch (error) {
+        console.error("로그아웃 API 호출 실패:", error);
+    } finally {
+        // 로컬 상태 정리
+        removeCookie("gf_token");
+        removeCookie("gf_refresh_token");
+        removeCookie("gf_user_id");
+    }
+};
