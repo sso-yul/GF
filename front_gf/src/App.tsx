@@ -1,37 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { getCookie, refreshToken } from './api/api.cookie';
 import './App.css'
 
-import { getCookie, refreshToken } from './api/api.cookie';
+import Layout from "./components/Layout"
+import Signin from "./components/pages/sign/Signin";
+import Signup from "./components/pages/sign/Signup";
+import Signing from "./components/pages/sign/Signing";
 
-import Layout from "./routers/Layout"
-import Signin from "./routers/pages/sign/Signin";
-import Signup from "./routers/pages/sign/Signup";
-import Signing from './routers/pages/sign/Signing';
-
-const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const checkAndRefreshToken = async () => {
+const AuthCheck = ({ children }: { children: React.ReactNode }) => {
+        useEffect(() => {
+            const checkAndRefreshToken = async () => {
             const token = getCookie("gf_token");
-            const refresh = getCookie("gf_refresh_token");
+            const refreshTokenExists = getCookie("gf_refresh_token");
 
-            if (!token && refresh) {
+            if (!token && refreshTokenExists) {
                 try {
+                    console.log("액세스 토큰 없음, 갱신 시도...");
                     await refreshToken();
                 } catch (error) {
-                    console.error("토큰 갱신 실패, 로그인 페이지로 이동합니다.");
-                    window.location.href = "/signin";
+                    console.error("자동 토큰 갱신 실패:", error);
                 }
             }
-            setLoading(false);
         };
 
         checkAndRefreshToken();
     }, []);
-
-    if (loading) return <div>로딩 중...</div>;
 
     return <>{children}</>;
 };
@@ -40,9 +34,8 @@ const router = createBrowserRouter([
     {
         path: "/",
         element: (
-            <AuthProvider>
                 <Layout />
-            </AuthProvider>),
+        ),
         children: [
             {
                 path: "/signin",
@@ -55,13 +48,17 @@ const router = createBrowserRouter([
             {
                 path: "/signing",
                 element: <Signing />
-            }
+            },
         ]
     }
 ])
 
 function App() {    
-    return <RouterProvider router={router} />;
+    return (
+        <AuthCheck>
+            <RouterProvider router={router} />
+        </AuthCheck>
+    );
 }
 
 export default App

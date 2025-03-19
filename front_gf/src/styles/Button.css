@@ -1,0 +1,114 @@
+.button {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    outline: none;
+}
+
+/* 포커스 시 외곽선 제거 */
+.button:focus {
+    outline: none;
+}
+
+/* 버튼 크기별 스타일 */
+.button.small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.button.medium {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+}
+
+.button.large {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
+}
+
+/* 버튼 색깔별 스타일 */
+.button.blue {
+    color:rgb(156, 147, 251);
+}
+
+.button.blue:hover {
+    color:rgb(47, 32, 180);
+}
+
+.button.red {
+    color: #ef4444;
+}
+
+.button.red:hover {
+    color: #dc2626;
+}
+
+.button.green {
+    color: #10b981;
+}
+
+.button.green:hover {
+    color: #059669;
+}
+
+.button.yellow {
+    color: #f59e0b;
+}
+
+.button.yellow:hover {
+    color: #d97706;
+}
+
+.button.gray {
+    color: #6b7280;
+}
+
+.button.gray:hover {
+    color: #4b5563;
+}
+
+.button.lightBlue {
+    color: #60a5fa;
+}
+
+.button.lightBlue:hover {
+    color: #3b82f6;
+}
+
+/* 버튼 크기에 맞는 아이콘 사이즈 */
+.icon-xs {
+    font-size: 0.75rem;
+}
+
+.icon-sm {
+    font-size: 1rem;
+}
+
+.icon-lg {
+    font-size: 1.25rem;
+}
+
+/* 로딩 상태 */
+.button.loading {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 전체 너비 버튼 */
+.button.full-width {
+    width: 100%;
+}
+
+/* 포커스 상태 */
+.button:focus {
+    outline: none;
+}

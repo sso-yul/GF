@@ -1,11 +1,11 @@
-package com.sol.gf.domain.signin;
+package com.sol.gf.domain.sign;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class SigninResponse {
+public class SignResponse {
     private String token;
     private String userId;
     private String userName;

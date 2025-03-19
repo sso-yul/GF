@@ -1,5 +1,6 @@
 import { useState, ChangeEvent } from "react";
 import { signup } from "../../../api/api.sign";
+import Button from "../../button/Button";
 
 interface UserData {
     userName: string;
@@ -50,6 +51,7 @@ export default function Signup() {
                     name="userName"
                     value={userData.userName}
                     onChange={handleChange}
+                    autoComplete="name"
                     required
                 />
             </p>
@@ -60,6 +62,7 @@ export default function Signup() {
                     name="userEmail"
                     value={userData.userEmail}
                     onChange={handleChange}
+                    autoComplete="email"
                     required
                 />
             </p>
@@ -70,6 +73,7 @@ export default function Signup() {
                     name="userId"
                     value={userData.userId}
                     onChange={handleChange}
+                    autoComplete="username"
                     required
                 />
             </p>
@@ -80,10 +84,11 @@ export default function Signup() {
                     name="rawPassword"
                     value={userData.rawPassword}
                     onChange={handleChange}
+                    autoComplete="new-password"
                     required
                 />
             </p>
-            <button onClick={handleSignup}>회원가입</button>
+            <Button iconPosition="left" onClick={handleSignup}>회원가입</Button>
 
             {error && <p style={{ color: "red" }}>{error}</p>}
             {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}

@@ -1,5 +1,6 @@
 import { ChangeEvent, useState } from "react";
 import { signin } from "../../../api/api.sign";
+import Button from "../../button/Button";
 
 interface SigninData {
     userId: string;
@@ -43,6 +44,7 @@ export default function Signin() {
                         name="userId"
                         value={signinData.userId}
                         onChange={handleChange}
+                        autoComplete="username"
                         required
                     />
                 </p>
@@ -52,13 +54,17 @@ export default function Signin() {
                         name="rawPassword"
                         value={signinData.rawPassword}
                         onChange={handleChange}
+                        autoComplete="current-password"
                         required
                     />
                 </p>
             </div>
-            <button onClick={handleSignin}>로그인</button>
+            <Button iconPosition="left" onClick={handleSignin}>로그인</Button>
             {error && <p style={{ color: "red" }}>{error}</p>}
             {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+            <div>
+                <Button iconPosition="left" size="medium" navigateTo="/signup" title="회원가입하기">회원가입 하기</Button>
+            </div>
         </>
     )
 }
