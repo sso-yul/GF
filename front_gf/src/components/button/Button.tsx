@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { ButtonProps } from "./Button.types";
 import { useButtonStore } from "../../stores/buttonStore";
-import "../../styles/Button.css";
+import "../../styles/button.css";
 
 const Button: React.FC<ButtonProps & {navigateTo?: string}> = ({
     children,
@@ -40,12 +40,11 @@ const Button: React.FC<ButtonProps & {navigateTo?: string}> = ({
 
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
 
+        // navigateTo가 있을 경우 해당 경로로 이동
         if (navigateTo) {
-            // navigateTo가 있을 경우 해당 경로로 이동
             navigate(navigateTo);
             return;
         }
-
 
         if (!onClick) return;
 

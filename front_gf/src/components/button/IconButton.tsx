@@ -7,11 +7,13 @@ import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 type IconButtonProps = Omit<ButtonProps, "iconPosition"> & {
     icon: IconDefinition;
     title?: string;
+    navigateTo?: string;
 };
 
 const IconButton: React.FC<IconButtonProps> = ({
     icon,
     title,
+    navigateTo,
     ...rest
 }) => {
     return (
@@ -19,6 +21,7 @@ const IconButton: React.FC<IconButtonProps> = ({
             icon={icon}
             iconPosition="only"
             aria-label={title}
+            navigateTo={navigateTo}
             title={title}
             {...rest}
         >

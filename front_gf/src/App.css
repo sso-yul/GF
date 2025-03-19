@@ -1,13 +1,6 @@
 #root {
-  max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-}
-
-.redDiv {
   width: 100%;
-  height: auto;
-  border: 2px solid red;
-  text-align: center;
 }

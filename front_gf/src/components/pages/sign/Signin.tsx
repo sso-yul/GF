@@ -59,11 +59,11 @@ export default function Signin() {
                     />
                 </p>
             </div>
-            <Button iconPosition="left" onClick={handleSignin}>로그인</Button>
+            <Button iconPosition="left" size="small" onClick={handleSignin} title="로그인">로그인</Button>
             {error && <p style={{ color: "red" }}>{error}</p>}
             {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
             <div>
-                <Button iconPosition="left" size="medium" navigateTo="/signup" title="회원가입하기">회원가입 하기</Button>
+                <Button iconPosition="left" size="small" navigateTo="/signup" title="회원가입 페이지로 이동">회원가입 하기</Button>
             </div>
         </>
     )
