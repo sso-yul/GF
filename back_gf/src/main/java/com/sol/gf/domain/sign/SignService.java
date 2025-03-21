@@ -24,6 +24,7 @@ public class SignService {
     private final JwtService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    // 로그인
     @Transactional
     public SignResponse signin(String userId, String rawPassword) {
         // 사용자 아이디로 사용자 검샑
@@ -52,6 +53,8 @@ public class SignService {
         }
     }
 
+    // 로그아웃
+    @Transactional
     public void signout(UserEntity user) {
         refreshTokenRepository.deleteByUser(user);
     }

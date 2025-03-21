@@ -15,7 +15,6 @@ public class JwtService {
 
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserRepository userRepository;
 
     // 리프레시 토큰 생성 및 저장
     public String createRefreshToken(UserEntity user) {

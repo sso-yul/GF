@@ -59,20 +59,6 @@ export const signin = async (signInData: SigninRequest): Promise<SigninResponse>
     }
 };
 
-export const signup = async (userData: { userId: string; userName: string; userEmail: string; rawPassword: string }) => {
-    try {
-        const response = await axios.post("/api/sign/signup", {
-            userId: userData.userId,
-            userName: userData.userName,
-            userEmail: userData.userEmail,
-            rawPassword: userData.rawPassword,
-        });
-        return response.data;
-    } catch (err: any) {
-        throw new Error(err.response?.data || err.message);
-    }
-};
-
 export const signout = async (): Promise<void> => {
     try {
         // 백엔드에 로그아웃 요청 (필요한 경우)

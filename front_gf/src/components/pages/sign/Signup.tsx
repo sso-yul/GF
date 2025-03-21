@@ -1,6 +1,7 @@
 import { useState, ChangeEvent } from "react";
-import { signup } from "../../../api/api.sign";
+import { signup } from "../../../api/api.user";
 import Button from "../../button/Button";
+import { useNavigate } from "react-router-dom"
 
 interface UserData {
     userName: string;
@@ -17,8 +18,9 @@ export default function Signup() {
         rawPassword: ""
     });
 
+    const navigator = useNavigate();
+
     const [error, setError] = useState<string>("");
-    const [successMessage, setSuccessMessage] = useState<string>("");
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -26,6 +28,25 @@ export default function Signup() {
     };
 
     const handleSignup = async () => {
+
+        if(!userData.userName.trim()) {
+            alert("이름을 입력하세요.");
+            return;
+        }
+        if(!userData.userEmail.trim()) {
+            alert("이메일을 입력하세요.");
+            return;
+        }
+        if(!userData.userId.trim()) {
+            alert("아이디를 입력하세요.");
+            return;
+        }
+        if(!userData.rawPassword.trim()) {
+            alert("비밀번호를 입력하세요.");
+            return;
+        }
+        
+
         try {
             await signup({
                 userId: userData.userId,
@@ -33,11 +54,11 @@ export default function Signup() {
                 userEmail: userData.userEmail,
                 rawPassword: userData.rawPassword,
             });
-            setSuccessMessage("회원가입 성공");
+            alert("회원가입이 완료되었습니다.");
+            navigator("/signin");
             setError("");
         } catch (err: any) {
-            setError("회원가입 실패: " + (err.message || err));
-            setSuccessMessage("");
+            setError(err.message || err);
         }
     };
 
@@ -91,7 +112,6 @@ export default function Signup() {
             <Button iconPosition="left" onClick={handleSignup}>회원가입</Button>
 
             {error && <p style={{ color: "red" }}>{error}</p>}
-            {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
         </div>
     );
 }

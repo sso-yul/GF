@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
+    // 내 정보 수정,
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RolesRepository rolesRepository;

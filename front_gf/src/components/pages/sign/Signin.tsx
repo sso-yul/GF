@@ -1,6 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import { signin } from "../../../api/api.sign";
 import Button from "../../button/Button";
+import { useNavigate } from "react-router-dom";
 
 interface SigninData {
     userId: string;
@@ -8,13 +9,13 @@ interface SigninData {
 }
 
 export default function Signin() {
+
+    const navigator = useNavigate();
+
     const [signinData, setSigninData] = useState<SigninData> ({
         userId: "",
         rawPassword: ""
     });
-
-    const [error, setError] = useState<string>("");
-    const [successMessage, setSuccessMessage] = useState<string>("");
 
     const handleChange = (e:ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -27,11 +28,9 @@ export default function Signin() {
                     userId: signinData.userId,
                     rawPassword: signinData.rawPassword,
                 });
-            setSuccessMessage("로그인 성공");
-            setError("");
+            navigator("/");
         } catch (err: any) {
-            setError("로그인 실패");
-            setSuccessMessage("");
+            alert("로그인 실패");
         }
     };
 
@@ -60,8 +59,6 @@ export default function Signin() {
                 </p>
             </div>
             <Button iconPosition="left" size="small" onClick={handleSignin} title="로그인">로그인</Button>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
             <div>
                 <Button iconPosition="left" size="small" navigateTo="/signup" title="회원가입 페이지로 이동">회원가입 하기</Button>
             </div>

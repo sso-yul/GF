@@ -5,28 +5,46 @@ import com.sol.gf.domain.user.UserRepository;
 import com.sol.gf.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/sign")
 public class SignController {
 
     private final SignService signService;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
-    @PostMapping("/api/sign/signin")
+    @PostMapping("/signin")
     public ResponseEntity<SignResponse> signin(@RequestBody SignRequest signRequest) {
         SignResponse signResponse = signService.signin(signRequest.getUserId(), signRequest.getRawPassword());
+
+        // 사용자 정보 저장
+        Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(signResponse.getRoles()));
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                signResponse.getUserId(),  // 사용자 ID
+                signRequest.getRawPassword(),  // 비밀번호
+                authorities  // 사용자 역할
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Authentication after signin: " + currentAuth);
+
+        System.out.println("111111111authentication: " + authentication);
         return ResponseEntity.ok(signResponse);
     }
 
-    @PostMapping("/api/sign/signout")
+    @PostMapping("/signout")
     public ResponseEntity<?> signout(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.substring(7);
         String userId = jwtUtil.getUserIdFromJwt(token);

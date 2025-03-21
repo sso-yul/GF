@@ -4,3 +4,7 @@
   text-align: center;
   width: 100%;
 }
+
+#root>div {
+  height: 100%;
+}

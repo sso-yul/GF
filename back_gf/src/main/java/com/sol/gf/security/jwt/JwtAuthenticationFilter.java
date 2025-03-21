@@ -29,8 +29,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        // 액세스 토큰 없어도 되는 api
         String requestURI = request.getRequestURI();
-        if (requestURI.equals("/api/sign/signin") || requestURI.equals("/api/auth/refresh")) {
+        if (requestURI.equals("/api/sign/signin") || requestURI.equals("/api/auth/refresh") || requestURI.equals("/api/user/register")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -40,15 +41,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (StringUtils.hasText(jwt)) {
                 String userId = jwtUtil.getUserIdFromJwt(jwt);
+                logger.info("Extracted JWT: " + jwt);
 
                 if (userId != null) {
                     UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+                    logger.info("Extracted User ID from JWT: " + userId);
 
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
 
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                    logger.info("User authenticated: " + userDetails.getUsername());
                 } else {
                     // userId가 null이면 인증 실패로 간주하고 401 반환
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

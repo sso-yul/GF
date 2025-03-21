@@ -4,5 +4,6 @@
     top: 0;
     width: 12%;
     height: 100%;
+    z-index: 2;
     border: 1px solid black;
 }

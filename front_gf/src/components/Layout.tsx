@@ -6,17 +6,19 @@ import "../styles/layout.css"
 
 export default function Layout() {
     return (
-        <div className="layout-container">
+        <>
             <Header />
-            <div className="content">
-                <div>
-                    <Navigator />
+            <div className="layout-container">
+                <div className="content">
+                    <div>
+                        <Navigator />
+                    </div>
+                    <main>
+                        <Outlet />
+                    </main>
                 </div>
-                <main>
-                    <Outlet />
-                </main>
             </div>
             <Footer />
-        </div>
+        </>
     );
 }

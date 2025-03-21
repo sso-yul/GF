@@ -2,6 +2,8 @@ import axios, { AxiosInstance } from "axios";
 import { getCookie, refreshToken } from "./api.cookie";
 import useAuthStore from "../stores/useAuthStore";
 
+axios.defaults.withCredentials = true;
+
 // API 클라이언트 생성
 const api: AxiosInstance = axios.create({
   baseURL: "/api",
