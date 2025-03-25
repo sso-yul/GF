@@ -62,6 +62,7 @@ const Button: React.FC<ButtonProps & {navigateTo?: string}> = ({
 
     const getIconSize = () => {
         switch (size) {
+            case "xsmall": return "icon-xxs";
             case "small": return "icon-xs";
             case "large": return "icon-lg";
             default: return "icon-sm";

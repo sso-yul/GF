@@ -31,4 +31,5 @@ export interface AuthState {
   refreshAuth: () => Promise<string>;
   getToken: () => string | null;
   getUserInfo: () => User | null;
+  updateToken: (newToken: string) => void;
 }

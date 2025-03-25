@@ -1,6 +1,6 @@
 import { useState, ChangeEvent } from "react";
-import { signup } from "../../../api/api.user";
-import Button from "../../button/Button";
+import { signup } from "../../api/api.user";
+import Button from "../../components/button/Button";
 import { useNavigate } from "react-router-dom"
 
 interface UserData {
@@ -17,10 +17,10 @@ export default function Signup() {
         userId: "",
         rawPassword: ""
     });
+    const [confirmPwd, setConfirmPwd] = useState<string>("");
+    const [error, setError] = useState<string>("");
 
     const navigator = useNavigate();
-
-    const [error, setError] = useState<string>("");
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -45,7 +45,10 @@ export default function Signup() {
             alert("비밀번호를 입력하세요.");
             return;
         }
-        
+        if (userData.rawPassword != confirmPwd) {
+            alert("비밀번호가 일치하지 않습니다.")
+            return;
+        }
 
         try {
             await signup({
@@ -66,7 +69,6 @@ export default function Signup() {
         <div className="signup-container">
             회원가입
             <p>
-                이름:
                 <input
                     type="text"
                     name="userName"
@@ -74,10 +76,10 @@ export default function Signup() {
                     onChange={handleChange}
                     autoComplete="name"
                     required
+                    placeholder="이름을 입력하세요"
                 />
             </p>
             <p>
-                이메일:
                 <input
                     type="email"
                     name="userEmail"
@@ -85,10 +87,10 @@ export default function Signup() {
                     onChange={handleChange}
                     autoComplete="email"
                     required
+                    placeholder="이메일을 입력하세요"
                 />
             </p>
             <p>
-                아이디:
                 <input
                     type="text"
                     name="userId"
@@ -96,10 +98,10 @@ export default function Signup() {
                     onChange={handleChange}
                     autoComplete="username"
                     required
+                    placeholder="아이디를 입력하세요"
                 />
             </p>
             <p>
-                비밀번호:
                 <input
                     type="password"
                     name="rawPassword"
@@ -107,6 +109,18 @@ export default function Signup() {
                     onChange={handleChange}
                     autoComplete="new-password"
                     required
+                    placeholder="비밀번호를 입력하세요"
+                />
+            </p>
+            <p>
+                <input 
+                    type="password"
+                    name="confirmPwd"
+                    value={confirmPwd}
+                    onChange={(event) => setConfirmPwd(event.target.value)}
+                    autoComplete="new-password"
+                    required
+                    placeholder="비밀번호를 확인하세요"
                 />
             </p>
             <Button iconPosition="left" onClick={handleSignup}>회원가입</Button>

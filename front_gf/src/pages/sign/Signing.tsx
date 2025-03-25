@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { getCookie } from "../../../api/api.cookie";
+import { getCookie } from "../../api/api.cookie";
 import { jwtDecode } from "jwt-decode";
 
 interface DecodedToken {

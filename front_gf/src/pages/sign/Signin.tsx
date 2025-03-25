@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
-import { signin } from "../../../api/api.sign";
-import Button from "../../button/Button";
+import { signin } from "../../api/api.sign";
+import Button from "../../components/button/Button";
 import { useNavigate } from "react-router-dom";
 
 interface SigninData {
@@ -23,6 +23,16 @@ export default function Signin() {
     }
 
     const handleSignin = async () => {
+
+        if (!signinData.userId.trim()) {
+            alert("아이디를 입력하세요.");
+            return;
+        }
+        if (!signinData.rawPassword.trim()) {
+            alert("비밀번호를 입력하세요.");
+            return;
+        }
+        
         try {
                 await signin({
                     userId: signinData.userId,
@@ -37,7 +47,7 @@ export default function Signin() {
     return (
         <>
             <div className="signin-container">
-                <p>아이디:
+                <p>
                     <input
                         type="text"
                         name="userId"
@@ -45,9 +55,10 @@ export default function Signin() {
                         onChange={handleChange}
                         autoComplete="username"
                         required
+                        placeholder="ID"
                     />
                 </p>
-                <p>비밀번호:
+                <p>
                     <input
                         type="password"
                         name="rawPassword"
@@ -55,13 +66,17 @@ export default function Signin() {
                         onChange={handleChange}
                         autoComplete="current-password"
                         required
+                        placeholder="PWD"
                     />
                 </p>
+                <div>
+                    <Button iconPosition="left" size="small" onClick={handleSignin} title="로그인">로그인</Button>
+                </div>
+                <div>
+                    <Button iconPosition="left" size="small" navigateTo="/signup" title="회원가입 페이지로 이동">회원가입 하기</Button>
+                </div>
             </div>
-            <Button iconPosition="left" size="small" onClick={handleSignin} title="로그인">로그인</Button>
-            <div>
-                <Button iconPosition="left" size="small" navigateTo="/signup" title="회원가입 페이지로 이동">회원가입 하기</Button>
-            </div>
+
         </>
     )
 }

@@ -37,10 +37,6 @@ public class SignController {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("Authentication after signin: " + currentAuth);
-
-        System.out.println("111111111authentication: " + authentication);
         return ResponseEntity.ok(signResponse);
     }
 

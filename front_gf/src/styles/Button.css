@@ -13,7 +13,10 @@
 .button:focus {
     outline: none;
 }
-
+.button.xsmall {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
 /* 버튼 크기별 스타일 */
 .button.small {
     padding: 0.25rem 0.5rem;
@@ -80,6 +83,10 @@
 }
 
 /* 버튼 크기에 맞는 아이콘 사이즈 */
+.icon-xxs {
+    font-size: 0.6rem;
+}
+
 .icon-xs {
     font-size: 0.75rem;
 }

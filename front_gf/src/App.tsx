@@ -1,12 +1,27 @@
-import { useEffect } from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { getCookie, refreshToken } from './api/api.cookie';
-import "./App.css"
+import { useEffect } from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { getCookie, refreshToken } from "./api/api.cookie";
+import "./App.css";
 
-import Layout from "./components/Layout"
-import Signin from "./components/pages/sign/Signin";
-import Signup from "./components/pages/sign/Signup";
-import Signing from "./components/pages/sign/Signing";
+import ProtectAdminRoute from "./stores/ProtectAdminRoute";
+
+import Layout from "./components/Layout";
+
+import Signin from "./pages/sign/Signin";
+import Signup from "./pages/sign/Signup";
+import Signing from "./pages/sign/Signing"
+
+import Admin from "./pages/admin/Admin";
+
+import Mypage from "./pages/user/Mypage";
+import Mypost from "./pages/user/Mypost";
+import Notification from "./pages/user/Notification";
+
+import Basic from "./pages/post/Basic";
+import Character from "./pages/post/Character";
+import Picture from "./pages/post/Picture";
+import Thread from "./pages/post/Thread";
+import Rpg from "./pages/post/Rpg";
 
 const AuthCheck = ({ children }: { children: React.ReactNode }) => {
         useEffect(() => {
@@ -16,7 +31,6 @@ const AuthCheck = ({ children }: { children: React.ReactNode }) => {
 
             if (!token && refreshTokenExists) {
                 try {
-                    console.log("액세스 토큰 없음, 갱신 시도...");
                     await refreshToken();
                 } catch (error) {
                     console.error("자동 토큰 갱신 실패:", error);
@@ -33,24 +47,29 @@ const AuthCheck = ({ children }: { children: React.ReactNode }) => {
 const router = createBrowserRouter([
     {
         path: "/",
-        element: (
-                <Layout />
-        ),
+        element: ( <Layout /> ),
         children: [
             {
-                path: "/signin",
-                element: <Signin />
+                element: <ProtectAdminRoute />,
+                children: [
+                    { path: "/admin", element: <Admin /> }
+                ]
             },
-            {
-                path: "/signup",
-                element: <Signup />
-            },
-            {
-                path: "/signing",
-                element: <Signing />
-            },
+
+            { path: "/mypage", element: <Mypage /> },
+            { path: "/mypage/post", element: <Mypost /> },
+            { path: "/mypage/noti", element: <Notification /> },
+
+            { path: "/post/basic", element: <Basic /> },
+            { path: "/post/char", element: <Character /> },
+            { path: "/post/pic", element: <Picture /> },
+            { path: "/post/thread", element: <Thread /> },
+            { path: "/post/rpg", element: <Rpg /> },
         ]
-    }
+    },
+    { path: "/signin", element: <Signin /> },
+    { path: "/signup", element: <Signup /> },
+    { path: "/signing", element: <Signing /> },
 ])
 
 function App() {    

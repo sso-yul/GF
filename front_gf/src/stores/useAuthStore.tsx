@@ -165,7 +165,18 @@ const useAuthStore = create<AuthState>()(
           return { userId, userName, roles };
         }
         return null;
-      }
+      },
+
+      updateToken: (newToken: string) => {
+        // 쿠키에 새 토큰 저장
+        setCookie(COOKIE_NAMES.TOKEN, newToken, {
+          ...DEFAULT_COOKIE_OPTIONS,
+          maxAge: 30 * 60, // 30분
+        });
+
+        // 상태 업데이트
+        set({ token: newToken });
+      },
     }),
     {
       name: "auth-storage",
