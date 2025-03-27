@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UserService {
     // 내 정보 수정,
+    // 유저 리스트 불러오기 - 이름, 아이디, 역할 (관리자 페이지에서도 사용)
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RolesRepository rolesRepository;
@@ -35,7 +36,7 @@ public class UserService {
                     throw new IllegalStateException("이미 사용 중인 이름입니다.");
                 });
 
-        RolesEntity defaultRole = rolesRepository.findByRolesNo(4).orElse(null);
+        RolesEntity defaultRole = rolesRepository.findByroleNo(4).orElse(null);
 
         UserEntity newUser = UserEntity.builder()
                 .userId(userDto.getUserId())
@@ -43,7 +44,7 @@ public class UserService {
                 .userPassword(passwordEncoder.encode(userDto.getRawPassword()))
                 .userEmail(userDto.getUserEmail())
                 .userCreateTime(LocalDateTime.now())
-                .userRoles(defaultRole)
+                .userRole(defaultRole)
                 .userImg(null)
                 .build();
 

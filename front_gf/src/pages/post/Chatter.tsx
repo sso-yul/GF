@@ -1,4 +1,4 @@
-export default function Rpg() {
+export default function Chatter() {
     return (
         <>
             rpg

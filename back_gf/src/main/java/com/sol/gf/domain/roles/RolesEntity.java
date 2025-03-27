@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 public class RolesEntity {
 
     @Id
-    @Column(name = "roles_no")
-    private long rolesNo;
+    @Column(name = "role_no")
+    private long roleNo;
 
     @Column(nullable = false)
-    private String rolesName;
+    private String roleName;
 
 }

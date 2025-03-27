@@ -34,8 +34,8 @@ public class UserEntity {
     private LocalDateTime userCreateTime;
 
     @ManyToOne
-    @JoinColumn(name = "user_roles", referencedColumnName = "roles_no")
-    private RolesEntity userRoles;
+    @JoinColumn(name = "user_role", referencedColumnName = "role_no")
+    private RolesEntity userRole;
 
     @OneToOne
     @JoinColumn(name = "user_img", referencedColumnName = "img_no")
@@ -43,13 +43,13 @@ public class UserEntity {
 
     @Builder
     public UserEntity(String userId, String userName, String userPassword, String userEmail,
-                      LocalDateTime userCreateTime, RolesEntity userRoles, ImgEntity userImg) {
+                      LocalDateTime userCreateTime, RolesEntity userRole, ImgEntity userImg) {
         this.userId = userId;
         this.userName = userName;
         this.userPassword = userPassword;
         this.userEmail = userEmail;
         this.userCreateTime = userCreateTime;
-        this.userRoles = userRoles;
+        this.userRole = userRole;
         this.userImg = userImg;
     }
 }

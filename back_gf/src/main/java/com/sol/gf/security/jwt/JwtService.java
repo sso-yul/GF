@@ -20,7 +20,7 @@ public class JwtService {
     public String createRefreshToken(UserEntity user) {
         refreshTokenRepository.deleteByUser(user);
         // 생성
-        String refreshToken = jwtUtil.generateRefreshToken(user.getUserId(), user.getUserRoles().getRolesName());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getUserId(), user.getUserRole().getRoleName());
 
         // 만료시간
         LocalDateTime expireTime = LocalDateTime.now().plusDays(7);

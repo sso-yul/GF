@@ -9,7 +9,6 @@ import Layout from "./components/Layout";
 
 import Signin from "./pages/sign/Signin";
 import Signup from "./pages/sign/Signup";
-import Signing from "./pages/sign/Signing"
 
 import Admin from "./pages/admin/Admin";
 
@@ -21,7 +20,7 @@ import Basic from "./pages/post/Basic";
 import Character from "./pages/post/Character";
 import Picture from "./pages/post/Picture";
 import Thread from "./pages/post/Thread";
-import Rpg from "./pages/post/Rpg";
+import Chatter from "./pages/post/Chatter";
 
 const AuthCheck = ({ children }: { children: React.ReactNode }) => {
         useEffect(() => {
@@ -62,14 +61,13 @@ const router = createBrowserRouter([
 
             { path: "/post/basic", element: <Basic /> },
             { path: "/post/char", element: <Character /> },
+            { path: "/post/chat", element: <Chatter /> },
             { path: "/post/pic", element: <Picture /> },
             { path: "/post/thread", element: <Thread /> },
-            { path: "/post/rpg", element: <Rpg /> },
         ]
     },
     { path: "/signin", element: <Signin /> },
     { path: "/signup", element: <Signup /> },
-    { path: "/signing", element: <Signing /> },
 ])
 
 function App() {    

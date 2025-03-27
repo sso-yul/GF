@@ -43,7 +43,7 @@ public class SignService {
             // 인증을 수행하고, 인증 정보 반환
             authenticationManager.authenticate(authentication);
 
-            String roles = user.getUserRoles().getRolesName();
+            String roles = user.getUserRole().getRoleName();
             String token = jwtUtil.generateToken(userId, roles);
             String refreshToken = jwtService.createRefreshToken(user);
 

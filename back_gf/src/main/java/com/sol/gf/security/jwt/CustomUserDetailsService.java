@@ -24,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없음: " + userId));
 
         // 사용자의 역할에 따라 권한 부여
-        String role = user.getUserRoles().getRolesName();
+        String role = user.getUserRole().getRoleName();
 
         return new User(
                 user.getUserId(),
