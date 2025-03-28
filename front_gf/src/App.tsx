@@ -48,6 +48,8 @@ const router = createBrowserRouter([
         path: "/",
         element: ( <Layout /> ),
         children: [
+            
+            // 관리자
             {
                 element: <ProtectAdminRoute />,
                 children: [
@@ -55,17 +57,38 @@ const router = createBrowserRouter([
                 ]
             },
 
+            // 내 페이지
             { path: "/mypage", element: <Mypage /> },
-            { path: "/mypage/post", element: <Mypost /> },
             { path: "/mypage/noti", element: <Notification /> },
 
-            { path: "/post/basic", element: <Basic /> },
-            { path: "/post/char", element: <Character /> },
-            { path: "/post/chat", element: <Chatter /> },
-            { path: "/post/pic", element: <Picture /> },
-            { path: "/post/thread", element: <Thread /> },
+            // 여기 url {userName}으로 해서 주소창으로도 검색 가능하게...
+            { path: "/post/userName", element: <Mypost /> },
+
+            // 게시글 유형
+            {   // 1. 기본
+                path: "/basic",
+                element: <Basic />
+            },
+            {   // 2. 캐릭터 상세
+                path: "/char",
+                element: <Character />
+            },
+            {   // 3. 채팅 형식
+                path: "/chat",
+                element: <Chatter />
+            },
+            {   // 4. 간단하게 사진만 올림
+                path: "/pic",
+                element: <Picture />
+            },
+            {   // 5. 썰 타래 형식
+                path: "/thread",
+                element: <Thread />
+            },
         ]
     },
+
+    // 로그인, 회원가입
     { path: "/signin", element: <Signin /> },
     { path: "/signup", element: <Signup /> },
 ])
