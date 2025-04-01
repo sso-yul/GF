@@ -9,6 +9,6 @@ public class SignResponse {
     private String token;
     private String userId;
     private String userName;
-    private String roles;
+    private String roleName;
     private String refreshToken;
 }

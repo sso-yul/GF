@@ -1,12 +1,12 @@
 package com.sol.gf.domain.user;
 
+import com.sol.gf.domain.admin.AdminUserListDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
 
+    // 회원 정보 수정 (이름, 비밀번호, 이메일, 프로필 사진)
 
     // 회원 가입
     @PostMapping("/register")
@@ -29,6 +30,10 @@ public class UserController {
         }
     }
 
-    // 회원 정보 수정 (이름, 비밀번호, 이메일, 프로필 사진)
-    //
+    // 사용자 목록 조회
+    @GetMapping("/list")
+    public ResponseEntity<List<AdminUserListDto>> getUserList() {
+        List<AdminUserListDto> userList = userService.getUserList();
+        return ResponseEntity.ok(userList);
+    }
 }

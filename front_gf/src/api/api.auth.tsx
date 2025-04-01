@@ -33,7 +33,7 @@ export const authApi = {
         }
     },
 
-    // 사용자가 관리자 또는 매니저인지 확인인
+    // 사용자가 관리자 또는 매니저인지 확인
     checkAdminOrManager: async (): Promise<boolean> => {
         try {
             const response = await axios.get<boolean>("/api/auth/check-admin-or-manager", {

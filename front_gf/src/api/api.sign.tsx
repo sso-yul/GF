@@ -6,7 +6,7 @@ import useAuthStore from "../stores/useAuthStore";
 export const signin = async (signInData: SigninRequest): Promise<SigninResponse> => {
     try {
         const response = await axios.post<SigninResponse>("/api/sign/signin", signInData);
-        const { token, refreshToken, userId, userName, roles } = response.data;
+        const { token, refreshToken, userId, userName, roleName } = response.data;
 
         // 액세스 토큰 저장
         setCookie("gf_token", token, {
@@ -39,7 +39,7 @@ export const signin = async (signInData: SigninRequest): Promise<SigninResponse>
             sameSite: "strict",
         });
 
-        setCookie("gf_user_roles", roles, {
+        setCookie("gf_user_roles", roleName, {
             path: "/",
             maxAge: 7 * 24 * 60 * 60, // 7일
             secure: false, // 프로덕션 환경에서는 true로 설정

@@ -8,5 +8,5 @@ import lombok.Setter;
 public class SignRequest {
     private String userId;
     private String rawPassword;
-    private String roles;
+    private String roleName;
 }

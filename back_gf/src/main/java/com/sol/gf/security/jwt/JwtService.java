@@ -52,10 +52,10 @@ public class JwtService {
             throw new IllegalStateException("리프레시 토큰이 만료되었습니다.");
         }
 
-        String roles = jwtUtil.getRolesFromJwt(refreshToken);
+        String roleName = jwtUtil.getRolesFromJwt(refreshToken);
 
         // 새로운 액세스 토큰 생성
-        return jwtUtil.generateToken(userId, roles);
+        return jwtUtil.generateToken(userId, roleName);
     }
 
     // 토큰 만료 확인 및 새 액세스 토큰 발급 메서드 - 지금은 클라이언트에서 해결 중이니 굳이 필요 없음

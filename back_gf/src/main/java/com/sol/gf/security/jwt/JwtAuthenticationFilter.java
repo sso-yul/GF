@@ -41,7 +41,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (StringUtils.hasText(jwt)) {
                 String userId = jwtUtil.getUserIdFromJwt(jwt);
-                logger.info("Extracted JWT: " + jwt);
 
                 if (userId != null) {
                     UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
@@ -52,7 +51,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    logger.info("User authenticated: " + userDetails.getUsername());
                 } else {
                     // userId가 null이면 인증 실패로 간주하고 401 반환
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -67,13 +65,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (ExpiredJwtException e) {
             // 토큰이 만료된 경우
-            logger.error("Token expired", e);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Unauthorized: Token has expired");
             return;
         } catch (JwtException | IllegalArgumentException e) {
             // 토큰이 잘못된 경우
-            logger.error("Invalid token", e);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Unauthorized: Invalid token");
             return;

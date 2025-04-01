@@ -31,13 +31,13 @@ const useAuthStore = create<AuthState>()(
         const token = getCookie(COOKIE_NAMES.TOKEN);
         const userId = getCookie(COOKIE_NAMES.USER_ID);
         const userName = getCookie(COOKIE_NAMES.USER_NAME);
-        const roles = getCookie(COOKIE_NAMES.USER_ROLES);
+        const roleName = getCookie(COOKIE_NAMES.USER_ROLES);
 
         if (token && userId) {
           set({
             isLoggedIn: true,
             token,
-            user: { userId, userName, roles },
+            user: { userId, userName, roleName },
           });
           return true;
         }
@@ -62,7 +62,7 @@ const useAuthStore = create<AuthState>()(
           }
           
           const data: SigninResponse = await response.json();
-          const { token, refreshToken, userId, userName, roles } = data;
+          const { token, refreshToken, userId, userName, roleName } = data;
 
           // 쿠키에 인증 정보 저장
           setCookie(COOKIE_NAMES.TOKEN, token, {
@@ -85,7 +85,7 @@ const useAuthStore = create<AuthState>()(
             maxAge: 7 * 24 * 60 * 60, // 7일
           });
           
-          setCookie(COOKIE_NAMES.USER_ROLES, roles, {
+          setCookie(COOKIE_NAMES.USER_ROLES, roleName, {
             ...DEFAULT_COOKIE_OPTIONS,
             maxAge: 7 * 24 * 60 * 60, // 7일
           });
@@ -94,7 +94,7 @@ const useAuthStore = create<AuthState>()(
           set({
             isLoggedIn: true,
             token,
-            user: { userId, userName, roles },
+            user: { userId, userName, roleName },
           });
         } catch (error) {
           console.error("로그인 실패:", error);
@@ -159,10 +159,10 @@ const useAuthStore = create<AuthState>()(
       getUserInfo: () => {
         const userId = getCookie(COOKIE_NAMES.USER_ID);
         const userName = getCookie(COOKIE_NAMES.USER_NAME);
-        const roles = getCookie(COOKIE_NAMES.USER_ROLES);
+        const roleName = getCookie(COOKIE_NAMES.USER_ROLES);
         
         if (userId) {
-          return { userId, userName, roles };
+          return { userId, userName, roleName };
         }
         return null;
       },

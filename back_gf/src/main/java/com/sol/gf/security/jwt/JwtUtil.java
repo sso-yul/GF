@@ -38,11 +38,11 @@ public class JwtUtil {
         this.key2 = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String userId, String roles) {
+    public String generateToken(String userId, String roleName) {
         return Jwts.builder()
                 .subject(userId)
                 .claim("userId", userId)
-                .claim("roles", roles)
+                .claim("roleName", roleName)
                 .issuer(issuer)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expirationTime))
@@ -50,11 +50,11 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String generateRefreshToken(String userId, String roles) {
+    public String generateRefreshToken(String userId, String roleName) {
         return Jwts.builder()
                 .subject(userId)
                 .claim("userId", userId)
-                .claim("roles", roles)
+                .claim("roleName", roleName)
                 .issuer(issuer)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + refreshExpirationTime)) // 7일
@@ -83,7 +83,7 @@ public class JwtUtil {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload()
-                    .get("roles", String.class);
+                    .get("roleName", String.class);
         } catch (JwtException e) {
             log.error("JWT 토큰에서 roles 추출 오류", e);
             return null;

@@ -33,7 +33,7 @@ public class UserEntity {
     @Column(nullable = false)
     private LocalDateTime userCreateTime;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_role", referencedColumnName = "role_no")
     private RolesEntity userRole;
 

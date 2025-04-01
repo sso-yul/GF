@@ -1,22 +1,26 @@
 package com.sol.gf.domain.user;
 
+import com.sol.gf.domain.admin.AdminUserListDto;
 import com.sol.gf.domain.roles.RolesEntity;
 import com.sol.gf.domain.roles.RolesRepository;
+import com.sol.gf.security.AuthService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     // 내 정보 수정 - 내 정보 불러오기
-    // 유저 리스트 불러오기 - 이름, 아이디, 역할 (관리자 페이지에서도 사용)
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RolesRepository rolesRepository;
+    private final AuthService authService;
 
     // 회원 가입
     @Transactional
@@ -36,7 +40,7 @@ public class UserService {
                     throw new IllegalStateException("이미 사용 중인 이름입니다.");
                 });
 
-        RolesEntity defaultRole = rolesRepository.findByroleNo(4).orElse(null);
+        RolesEntity defaultRole = rolesRepository.findByRoleNo(4).orElse(null);
 
         UserEntity newUser = UserEntity.builder()
                 .userId(userDto.getUserId())
@@ -58,5 +62,24 @@ public class UserService {
                 .userImg(null)
                 .rawPassword(null)
                 .build();
+    }
+
+    // 사용자 목록 조회
+    public List<AdminUserListDto> getUserList() {
+        List<UserEntity> users;
+
+        if (authService.isAdmin()) {
+            users = userRepository.findAll();
+        } else if (authService.isManager()) {
+            users = userRepository.findByUserRoleNot(rolesRepository.findByRoleNo(1).orElseThrow());
+        } else {
+            users = userRepository.findByUserRoleNotIn(
+                    List.of(
+                            rolesRepository.findByRoleNo(1).orElseThrow(),
+                            rolesRepository.findByRoleNo(2).orElseThrow()
+                    )
+            );
+        }
+        return users.stream().map(AdminUserListDto::adminUserListDto).collect(Collectors.toList());
     }
 }

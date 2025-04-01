@@ -28,7 +28,7 @@ public class SignController {
         SignResponse signResponse = signService.signin(signRequest.getUserId(), signRequest.getRawPassword());
 
         // 사용자 정보 저장
-        Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(signResponse.getRoles()));
+        Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(signResponse.getRoleName()));
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 signResponse.getUserId(),  // 사용자 ID

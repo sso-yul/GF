@@ -43,11 +43,11 @@
 }
 
 .button.red {
-    color: #ef4444;
+    color:rgb(222, 145, 145);
 }
 
 .button.red:hover {
-    color: #dc2626;
+    color:rgb(246, 95, 95);
 }
 
 .button.green {
@@ -67,11 +67,11 @@
 }
 
 .button.gray {
-    color: #6b7280;
+    color:rgb(203, 206, 211);
 }
 
 .button.gray:hover {
-    color: #4b5563;
+    color:rgb(161, 164, 171);
 }
 
 .button.lightBlue {

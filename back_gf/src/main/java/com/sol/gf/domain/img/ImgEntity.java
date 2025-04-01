@@ -21,7 +21,4 @@ public class ImgEntity {
     @Column(nullable = false)
     private String imgPath;
 
-    @Lob
-    @Column(nullable = false)
-    private byte[] img;
 }

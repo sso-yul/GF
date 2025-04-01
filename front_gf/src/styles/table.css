@@ -1,0 +1,28 @@
+table {
+    all: unset; /* 모든 기본 스타일 제거 */
+    width: 100%;
+}
+
+th, td {
+    all: unset;
+}
+
+table {
+    display: table;
+    width: 50%;
+}
+
+th {
+    display: table-cell;
+    text-align: center;
+}
+
+tr {
+    display: table-row;
+}
+
+td {
+    display: table-cell;
+    text-align: left;
+    vertical-align: middle;
+}

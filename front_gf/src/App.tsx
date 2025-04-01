@@ -11,6 +11,9 @@ import Signin from "./pages/sign/Signin";
 import Signup from "./pages/sign/Signup";
 
 import Admin from "./pages/admin/Admin";
+import BannerList from "./pages/admin/BannerList";
+import MenuList from "./pages/admin/MenuList";
+import UserList from "./pages/admin/UserList";
 
 import Mypage from "./pages/user/Mypage";
 import Mypost from "./pages/user/Mypost";
@@ -53,7 +56,19 @@ const router = createBrowserRouter([
             {
                 element: <ProtectAdminRoute />,
                 children: [
-                    { path: "/admin", element: <Admin /> }
+                    {
+                        path: "/admin",
+                        element: <Admin />,
+                        children: [
+                            // 아래 목록들은 전부 추가, 수정, 삭제 기능 있음
+                            // 배너 목록
+                            { path: "banner", element: <BannerList /> },
+                            // 메뉴 목록
+                            { path: "menu", element: <MenuList /> },
+                            // 사용자 목록
+                            { path: "user", element: <UserList /> }
+                        ]
+                    }
                 ]
             },
 
