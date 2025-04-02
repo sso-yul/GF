@@ -13,6 +13,7 @@ import Signup from "./pages/sign/Signup";
 import Admin from "./pages/admin/Admin";
 import BannerList from "./pages/admin/BannerList";
 import MenuList from "./pages/admin/MenuList";
+import Other from "./pages/admin/Other";
 import UserList from "./pages/admin/UserList";
 
 import Mypage from "./pages/user/Mypage";
@@ -66,7 +67,9 @@ const router = createBrowserRouter([
                             // 메뉴 목록
                             { path: "menu", element: <MenuList /> },
                             // 사용자 목록
-                            { path: "user", element: <UserList /> }
+                            { path: "user", element: <UserList /> },
+                            // 배경사진 관리, 내비바에 있는 정보 관리
+                            { path: "other", element: <Other />}
                         ]
                     }
                 ]

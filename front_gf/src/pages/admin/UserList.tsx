@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { getUserList } from "../../api/api.user"
 import { getRoles } from "../../api/api.manager";
 import Table from "../../components/table/Table";
+import "../../styles/table.css"
 
 interface TableUser {
     ID: string;
@@ -40,16 +41,17 @@ export default function UserList() {
 
     return (
         <>
-            <div>
-                <p>사용자 목록</p>
-                <Table
-                    columns={["ID", "NAME", "ROLE", ""]}
-                    data={users}
-                    editableColumns={["ROLE"]}
-                    options={{ ROLE: roles }}
-                    onEdit={handleEdit}
-                />
-
+            <p>사용자 목록</p>
+            <div className="user-container">
+                <div className="user-table">
+                    <Table
+                        columns={["ID", "NAME", "ROLE", ""]}
+                        data={users}
+                        editableColumns={["ROLE"]}
+                        options={{ ROLE: roles }}
+                        onEdit={handleEdit}
+                    />
+                </div>
             </div>
         </>
     )

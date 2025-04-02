@@ -1,28 +1,44 @@
+// 모든 테이블 공통
 table {
-    all: unset; /* 모든 기본 스타일 제거 */
-    width: 100%;
+    border-collapse : collapse;
+    vertical-align: middle;
 }
 
-th, td {
-    all: unset;
-}
-
-table {
-    display: table;
-    width: 50%;
+tbody tr:nth-child(odd) {
+    background-color:rgb(243, 243, 243);
 }
 
 th {
-    display: table-cell;
+    font-weight: 200;
+}
+
+// UserList.tsx 테이블
+.user-container {
+    display: absolute;
+}
+
+.user-table {
+    width: 60%;
+    max-height: 100%;
+    overflow: auto;
+    justify-content: center;
+    border: 1px solid black;
+}
+
+.user-table table {
+    width: 100%;
+}
+
+.user-table tr, td {
     text-align: center;
-}
-
-tr {
-    display: table-row;
-}
-
-td {
-    display: table-cell;
-    text-align: left;
     vertical-align: middle;
+}
+
+.user-table select {
+    border: none;
+    background-color: transparent;
+}
+
+.user-table select:focus {
+    outline: 0;
 }

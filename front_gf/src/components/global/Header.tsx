@@ -46,7 +46,7 @@ export default function Header() {
             {!isLoggedIn && (<IconButton icon={faUser} navigateTo="/signin" title="로그인" />)}
             {isLoggedIn && (<Button iconPosition="right" navigateTo="/mypage" title="마이페이지">{userName}</Button>)}
             {isLoggedIn && (<IconButton icon={faBell} navigateTo="/mypage/noti" title="알림" />)}
-            {isLoggedIn && hasAdminAccess && (<IconButton icon={faGear} navigateTo="/admin" title="홈페이지 설정" />)}
+            {isLoggedIn && hasAdminAccess && (<IconButton icon={faGear} navigateTo="/admin/other" title="홈페이지 설정" />)}
             {isLoggedIn && (<IconButton icon={faRightFromBracket} onClick={handleSignout} title="로그아웃" />)}
         </header>
     );

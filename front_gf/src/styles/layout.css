@@ -6,21 +6,36 @@
     min-height: calc(100% - 30px);
     position: relative;
     border: 1px solid orange;
+    height: 100%;
   }
-  
+
 .content {
     position: center;
     width: 90%;
+    height:100%;
     top: 10%;
     left:50%;
     /* transform:translateX(-50%); */
     border: 1px solid red;
 }
 
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:100%;
+}
+
+.div-left {
+    text-align:left;
+}
+
 main {
     width: 80%;
+    height:95vh;
     margin: 0 auto; 
     border: 1px solid blue;
+    overflow: auto;
 }
 
 header {
