@@ -82,6 +82,16 @@
     color: #3b82f6;
 }
 
+.button.bg-blue {
+    color: white;
+    background-color:rgb(208, 203, 255);
+    border-radius: 5px;
+}
+
+.button.bg-blue:hover {
+    background-color:rgb(105, 91, 225);
+}
+
 /* 버튼 크기에 맞는 아이콘 사이즈 */
 .icon-xxs {
     font-size: 0.6rem;

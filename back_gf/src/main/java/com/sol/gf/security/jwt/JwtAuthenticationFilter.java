@@ -44,7 +44,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 if (userId != null) {
                     UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
-                    logger.info("Extracted User ID from JWT: " + userId);
 
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());

@@ -1,4 +1,4 @@
-import React, { useId } from "react";
+import React, { useId, JSX } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -6,7 +6,7 @@ import { ButtonProps } from "./Button.types";
 import { useButtonStore } from "../../stores/buttonStore";
 import "../../styles/button.css";
 
-const Button: React.FC<ButtonProps & {navigateTo?: string}> = ({
+const Button = ({
     children,
     color = "blue",
     size = "medium",
@@ -20,7 +20,7 @@ const Button: React.FC<ButtonProps & {navigateTo?: string}> = ({
     onClick,
     navigateTo,
     ...rest
-}) => {
+}: ButtonProps & { navigateTo?: string }): JSX.Element => {
 
     const navigate = useNavigate();
 

@@ -30,11 +30,13 @@ th {
 }
 
 .user-table tr, td {
+    font-size: 13px;
     text-align: center;
     vertical-align: middle;
 }
 
 .user-table select {
+    font-size: 12px;
     border: none;
     background-color: transparent;
 }

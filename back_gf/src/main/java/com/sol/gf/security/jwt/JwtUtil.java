@@ -71,7 +71,7 @@ public class JwtUtil {
                     .getPayload()
                     .getSubject();
         } catch (JwtException e) {
-            log.error("JWT 토큰 오류", e);
+            log.error("JWT 오류", e);
             return null;
         }
     }
@@ -85,7 +85,7 @@ public class JwtUtil {
                     .getPayload()
                     .get("roleName", String.class);
         } catch (JwtException e) {
-            log.error("JWT 토큰에서 roles 추출 오류", e);
+            log.error("JWT에서 roles 추출 오류", e);
             return null;
         }
     }
@@ -98,7 +98,7 @@ public class JwtUtil {
                     .parseSignedClaims(token);
             return true;
         } catch (JwtException e) {
-            log.error("JWT 토큰 검증 오류", e);
+            log.error("JWT 검증 오류", e);
             return false;
         }
     }

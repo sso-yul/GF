@@ -16,7 +16,7 @@ export default function Admin() {
                 <IconButton icon={faBars} navigateTo="/admin/banner" title="배너 목록" />
                 <IconButton icon={faEllipsis} navigateTo="/admin/other" title="나머지" />
             </div>
-            <Outlet />
+                <Outlet />
         </>
     )
 }

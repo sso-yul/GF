@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react"
+import { useState, useEffect, JSX } from "react"
 import IconButton from "../button/IconButton";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { TableProps } from "../../stores/types"
 import "../../styles/table.css";
 
-const Table: React.FC<TableProps> = ({
+const Table = ({
     columns,
     data,
     editableColumns = [],
     options={},
     onEdit
-}) => {    
+}: TableProps): JSX.Element => {
     const [tableData, setTableData] = useState(data);
 
     useEffect(() => {
@@ -74,7 +74,7 @@ const Table: React.FC<TableProps> = ({
                                             />
                                         </td>
                                     )
-                                } else {    
+                                } else {
                                     return (
                                         <td key={colIndex}>
                                             {row[column]}
@@ -86,7 +86,6 @@ const Table: React.FC<TableProps> = ({
                     ))}
                 </tbody>
             </table>
-
         </>
     );
 };
