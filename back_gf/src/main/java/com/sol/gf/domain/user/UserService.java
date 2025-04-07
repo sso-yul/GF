@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,7 +72,10 @@ public class UserService {
         if (authService.isAdmin()) {
             users = userRepository.findAll();
         } else if (authService.isManager()) {
-            users = userRepository.findByUserRoleNot(rolesRepository.findByRoleNo(1).orElseThrow());
+            List<RolesEntity> roles = new ArrayList<>();
+            roles.add(rolesRepository.findByRoleNo(1).orElseThrow());
+            roles.add(rolesRepository.findByRoleNo(2).orElseThrow());
+            users = userRepository.findByUserRoleNotIn(roles);
         } else {
             users = userRepository.findByUserRoleNotIn(
                     List.of(

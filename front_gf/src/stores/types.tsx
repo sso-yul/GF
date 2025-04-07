@@ -42,3 +42,10 @@ export interface TableProps {
   options?: { [key: string]: string[] };
   onEdit?: (updateData: any[]) => void;
 }
+
+export interface TableUser {
+  ID: string;
+  NAME: string;
+  ROLE: string;
+  originalRole: string;
+}

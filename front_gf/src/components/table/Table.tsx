@@ -1,6 +1,6 @@
 import { useState, useEffect, JSX } from "react"
 import IconButton from "../button/IconButton";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { TableProps } from "../../stores/types"
 import "../../styles/table.css";
 
@@ -67,7 +67,7 @@ const Table = ({
                                     return (
                                         <td key={colIndex}>
                                             <IconButton
-                                                icon={faTrashCan}
+                                                icon={faXmark}
                                                 color="red"
                                                 size="small"
                                                 title="삭제"

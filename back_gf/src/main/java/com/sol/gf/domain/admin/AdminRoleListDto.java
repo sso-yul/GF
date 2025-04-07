@@ -11,9 +11,10 @@ import lombok.*;
 @NoArgsConstructor
 public class AdminRoleListDto {
     private String roleName;
+    private long roleNo;
 
     public static AdminRoleListDto adminRoleListDto(RolesEntity roles) {
-        return new AdminRoleListDto(roles.getRoleName());
+        return new AdminRoleListDto(roles.getRoleName(), roles.getRoleNo());
     }
 
 }

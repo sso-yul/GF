@@ -3,9 +3,7 @@ package com.sol.gf.domain.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,5 +19,11 @@ public class AdminController {
     public ResponseEntity<List<AdminRoleListDto>> getRoleList() {
         List<AdminRoleListDto> roles = adminService.getRoleList();
         return ResponseEntity.ok(roles);
+    }
+
+    @PutMapping("/manager/roles/update")
+    public ResponseEntity<Void> updateRole(@RequestBody List<UserRoleUpdateDto> updates) {
+        adminService.updateUserRole(updates);
+        return ResponseEntity.ok().build();
     }
 }
