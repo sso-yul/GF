@@ -1,7 +1,6 @@
 import React, { useId, JSX } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { ButtonProps } from "./Button.types";
 import { useButtonStore } from "../../stores/buttonStore";
 import "../../styles/button.css";
@@ -35,7 +34,6 @@ const Button = ({
     const sizeClasses = `button ${size ? size : 'medium'}`;
     const colorClasses = `button ${color}`;
     const widthClasses = fullWidth ? 'full-width' : '';
-    const loadingClass = isLoading ? 'loading' : '';
     const disabledClass = disabled ? 'disabled' : '';
 
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -82,22 +80,15 @@ const Button = ({
 
     return (
         <button
-            className={`${sizeClasses} ${colorClasses} ${widthClasses} ${loadingClass} ${disabledClass} ${className}`}
+            className={`${sizeClasses} ${colorClasses} ${widthClasses} ${disabledClass} ${className}`}
             disabled={disabled || isLoading}
             onClick={handleClick}
             {...rest}
         >
-            {isLoading && (
-                <FontAwesomeIcon
-                    icon={faSpinner}
-                    className={`${getIconSize()} mr-2 fa-spin`}
-                />
-            )}
-
             {icon && iconPosition === "left" && renderIcon()}
             {iconPosition !== "only" && children}
             {icon && iconPosition === "right" && renderIcon()}
-            {!isLoading && icon && iconPosition === "only" && renderIcon()}
+            {icon && iconPosition === "only" && renderIcon()}
         </button>
     );
 };
