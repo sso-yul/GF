@@ -67,10 +67,12 @@ public class MenusService {
                 .roles(new HashSet<>())
                 .build();
 
-        for (Long roleNo : request.getRoleNos()) {
-            RolesEntity role = rolesRepository.findById(roleNo)
-                    .orElseThrow(() -> new EntityNotFoundException("권한을 찾을 수 없습니다."));
-            menu.addRole(role);
+        if (request.getRoleNos() != null) {
+            for (Long roleNo : request.getRoleNos()) {
+                RolesEntity roles = rolesRepository.findById(roleNo)
+                        .orElseThrow(() -> new EntityNotFoundException("권한을 찾을 수 없습니다."));
+                menu.addRole(roles);
+            }
         }
 
         MenusEntity savedMenus = menusRepository.save(menu);
