@@ -43,7 +43,7 @@ public class MenusController {
     private List<MenusDto> convertToDTO(List<MenusEntity> menus, List<String> userRoles) {
         return menus.stream()
                 .map(menu -> MenusDto.builder()
-                        .menuNo(menu.getMenuNo())
+                        .menuOrder(menu.getMenuOrder())
                         .menuName(menu.getMenuName())
                         .menuUrl(menu.getMenuUrl())
                         .categoryNo(menu.getMenuCategoryNo().getCategoryNo())

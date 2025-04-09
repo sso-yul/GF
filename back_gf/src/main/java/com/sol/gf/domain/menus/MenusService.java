@@ -60,7 +60,7 @@ public class MenusService {
                 .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
 
         MenusEntity menu = MenusEntity.builder()
-                .menuNo(request.getMenuNo())
+                .menuOrder(request.getMenuOrder())
                 .menuName(request.getMenuName())
                 .menuUrl(request.getMenuUrl())
                 .menuCategoryNo(category)
@@ -106,7 +106,7 @@ public class MenusService {
         }
 
         return MenuCreateRequest.builder()
-                .menuNo(savedMenus.getMenuNo())
+                .menuOrder(savedMenus.getMenuOrder())
                 .menuName(savedMenus.getMenuName())
                 .menuUrl(savedMenus.getMenuUrl())
                 .categoryNo(savedMenus.getMenuCategoryNo().getCategoryNo())
@@ -125,7 +125,7 @@ public class MenusService {
                     .orElseThrow(() -> new EntityNotFoundException("카테고리를 찾을 수 없습니다."));
         }
         menu.updateMenu(
-                request.getMenuNo(),
+                request.getMenuOrder(),
                 request.getMenuName(),
                 request.getMenuUrl(),
                 category != null ? category : menu.getMenuCategoryNo()

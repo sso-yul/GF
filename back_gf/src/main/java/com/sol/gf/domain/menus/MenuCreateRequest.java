@@ -17,7 +17,7 @@ public class MenuCreateRequest {
     private String menuName;
     private String menuUrl;
     private long categoryNo;
-    private long menuNo;
+    private long menuOrder;
 
     private List<Long> roleNos;
     private List<MenuPermissionRequest> permissions;

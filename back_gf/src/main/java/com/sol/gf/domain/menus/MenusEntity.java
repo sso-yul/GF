@@ -17,8 +17,12 @@ import java.util.Set;
 public class MenusEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "menu_no")
     private long menuNo;
+
+    @Column(name = "menu_order")
+    private long menuOrder;
 
     @Column(name = "menu_name")
     private String menuName;
