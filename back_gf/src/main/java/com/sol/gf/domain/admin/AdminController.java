@@ -1,10 +1,7 @@
 package com.sol.gf.domain.admin;
 
 
-import com.sol.gf.domain.menus.MenuCreateRequest;
-import com.sol.gf.domain.menus.MenusDto;
-import com.sol.gf.domain.menus.MenusEntity;
-import com.sol.gf.domain.menus.MenusService;
+import com.sol.gf.domain.menus.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -21,13 +18,14 @@ public class AdminController {
     private final AdminService adminService;
     private final MenusService menusService;
 
-    // 역할 가져오기 - 관리자는 전체, 매니저는 관리자 제외
+    // 권한 가져오기 - 관리자는 전체, 매니저는 관리자 제외
     @GetMapping("/manager/roles")
     public ResponseEntity<List<AdminRoleListDto>> getRoleList() {
         List<AdminRoleListDto> roles = adminService.getRoleList();
         return ResponseEntity.ok(roles);
     }
 
+    // 권한 수정
     @PutMapping("/manager/roles/update")
     public ResponseEntity<Void> updateRole(@RequestBody List<UserRoleUpdateDto> updates) {
         adminService.updateUserRole(updates);
@@ -46,5 +44,16 @@ public class AdminController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    // 메뉴 수정 - 20250414~
+    @PostMapping("/manager/menus/update")
+    public ResponseEntity<?> updateMenus(@RequestBody Long menuNo, @RequestBody MenuUpdateRequest menuUpdateRequest) {
+        try {
+            MenusEntity updateMenus = menusService.updateMenu(menuNo, menuUpdateRequest);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        return null;
     }
 }

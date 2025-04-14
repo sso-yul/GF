@@ -12,21 +12,24 @@ th {
     font-weight: 200;
 }
 
-// UserList.tsx 테이블
 .user-container {
-    display: absolute;
+    width: 100%;
+    height: 90%;
+    overflow: auto;
+    border: 1px solid orange;
 }
 
+// UserList.tsx 테이블
 .user-table {
-    width: 60%;
+    width: 50%;
     max-height: 100%;
-    overflow: auto;
+    overflow-y: auto;
     justify-content: center;
     border: 1px solid black;
 }
 
 .user-table table {
-    width: 100%;
+    width: 50%;
 }
 
 .user-table tr, td {

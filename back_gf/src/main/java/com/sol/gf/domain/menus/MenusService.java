@@ -52,7 +52,6 @@ public class MenusService {
                 .collect(Collectors.toList());
     }
 
-
     // 게시판 생성 가능(기존 1,2,3,4,5 템플릿(카테고리) 바탕으로 / 사용자 권한도 동시에 부여)
     @Transactional
     public MenuCreateRequest createMenu(MenuCreateRequest request) {
@@ -99,7 +98,7 @@ public class MenusService {
         for (MenuPermissionsEntity perm : menuPermissionsRepository.findByMenuNo(savedMenus)) {
             permissionRequests.add(
                     MenuPermissionRequest.builder()
-                            .roleNo(perm. getRoleNo().getRoleNo())
+                            .roleNo(perm.getRoleNo().getRoleNo())
                             .permissionType(perm.getPermissionTypeNo().getPermissionName())
                             .build()
             );

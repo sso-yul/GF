@@ -63,7 +63,7 @@ export default function UserList() {
             
             alert("권한이 수정되었습니다.");
         } catch (error) {
-            console.error("역할 업데이트 실패: ", error);
+            console.error("권한 수정 실패: ", error);
             alert("권한을 수정하지 못했습니다.");
         }
     };

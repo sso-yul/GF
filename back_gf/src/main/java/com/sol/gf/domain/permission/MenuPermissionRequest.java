@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MenuPermissionRequest {
-
     private long roleNo;
     private String permissionType;
 }
