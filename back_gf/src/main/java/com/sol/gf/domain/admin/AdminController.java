@@ -51,9 +51,12 @@ public class AdminController {
     public ResponseEntity<?> updateMenus(@RequestBody Long menuNo, @RequestBody MenuUpdateRequest menuUpdateRequest) {
         try {
             MenusEntity updateMenus = menusService.updateMenu(menuNo, menuUpdateRequest);
+            if (updateMenus == null) {
+                return null;
+            }
+            return ResponseEntity.status(HttpStatus.CREATED).body(updateMenus);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        return null;
     }
 }

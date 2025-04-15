@@ -86,7 +86,7 @@ export default function UserList() {
                     <Table
                         columns={["ID", "NAME", "ROLE", ""]}
                         data={users}
-                        editableColumns={["ROLE"]}
+                        selectColumns={["ROLE"]}
                         options={{ ROLE: roles }}
                         onEdit={handleEdit}
                     />

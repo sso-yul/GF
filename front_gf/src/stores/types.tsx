@@ -33,13 +33,17 @@ export interface AuthState {
     getToken: () => string | null;
     getUserInfo: () => User | null;
     updateToken: (newToken: string) => void;
-    }
+}
 
-    export interface TableProps {
+export interface TableProps {
     columns: string[];
     data: any[];
-    editableColumns?: string[];
+    inputColumns?: string[];
+    selectColumns?: string[];
+    checkboxColumns?: string[];
+    multiCheckboxColumns?: string[];
     options?: { [key: string]: string[] };
+    checkboxOptions?: { [key: string]: string[] };
     onEdit?: (updateData: any[]) => void;
 }
 
@@ -62,4 +66,9 @@ export interface MenuCreateRequest {
 export interface MenuPermissionRequest {
     roleNo: number;
     permissionType: string;
+}
+
+export interface Roles {
+    roleNo: number;
+    roleName: string;
 }
