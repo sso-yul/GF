@@ -8,36 +8,30 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
+@Entity
 @Builder
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Getter
 @Table(name = "tb_menu_permissions")
-@IdClass(MenuPermissionsEntity.MenuPermissionId.class)
 public class MenuPermissionsEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long permissionId;
+
     @ManyToOne
-    @JoinColumn(name = "per_menu_no")
+    @JoinColumn(name = "per_menu_no", nullable = false)
     private MenusEntity menuNo;
 
-    @Id
     @ManyToOne
-    @JoinColumn(name = "per_role_no")
+    @JoinColumn(name = "per_role_no", nullable = false)
     private RolesEntity roleNo;
 
-    @Id
     @ManyToOne
-    @JoinColumn(name = "per_permission_type_no")
+    @JoinColumn(name = "per_permission_type_no", nullable = false)
     private PermissionTypesEntity permissionTypeNo;
 
-    public static class MenuPermissionId implements Serializable {
-        private long menuNo;
-        private long roleNo;
-        private long permissionTypeNo;
-    }
-
+    // equals/hashCode는 permissionId 기준으로 구현
 }
+

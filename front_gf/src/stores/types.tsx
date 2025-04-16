@@ -1,3 +1,5 @@
+import { JSX } from "react";
+
 export interface SigninRequest {
     userId: string;
     rawPassword: string;
@@ -44,7 +46,16 @@ export interface TableProps {
     multiCheckboxColumns?: string[];
     options?: { [key: string]: string[] };
     checkboxOptions?: { [key: string]: string[] };
-    onEdit?: (updateData: any[]) => void;
+    selectOptions?: { [key: string]: string[] };
+    hiddenColumns?: string[];
+    actionColumn?: string;
+    actionButtons?: Array<{
+        label: string;
+        onClick: (row: any, rowIndex: number) => void;
+        className?: string;
+    }>;
+    rowWrapperComponent?: (rowData: any, index: number, content: JSX.Element) => JSX.Element;
+    onEdit?: (updatedData: any[]) => void;
 }
 
 export interface TableUser {
@@ -63,12 +74,45 @@ export interface MenuCreateRequest {
     permissions?: MenuPermissionRequest[];
 }
 
+export interface MenuUpdateRequest {
+    menuNo: number;
+    menuOrder: number;
+    menuName: string;
+    menuUrl: string;
+    categoryNo: number;
+    permissions?: MenuPermissionRequest[];
+}
+
 export interface MenuPermissionRequest {
     roleNo: number;
-    permissionType: string;
+    permissionType: "READ" | "WRITE";
+}
+
+export interface MenuList {
+    menuNo: number;
+    menuName: string;
+    menuUrl: string;
+    menuOrder: number;
+
+    categoryNo: number;
+    categoryName: string;
+
+    roles: Roles[];
+    permissions: MenuPermissionRequest[];
 }
 
 export interface Roles {
     roleNo: number;
     roleName: string;
+}
+
+export interface MenuItem {
+    menuNo: number;
+    menuName: string;
+    menuOrder: number;
+}
+
+export interface SortableMenuListProps {
+    items: MenuItem[];
+    onUpdateOrder: (updated: MenuItem[]) => void;
 }

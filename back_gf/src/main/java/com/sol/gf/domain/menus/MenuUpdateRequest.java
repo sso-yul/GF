@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MenuUpdateRequest {
+    private Long menuNo;
     private Long menuOrder;
     private String menuName;
     private String menuUrl;

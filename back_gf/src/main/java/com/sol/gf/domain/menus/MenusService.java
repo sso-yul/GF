@@ -7,6 +7,7 @@ import com.sol.gf.domain.roles.RolesEntity;
 import com.sol.gf.domain.roles.RolesRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -34,9 +35,11 @@ public class MenusService {
         this.permissionTypesRepository = permissionTypesRepository;
     }
 
-    // 게시판 리스트 네비바에 뿌리기
-    public List<MenusEntity> getAllMenus() {
-        return menusRepository.findAll();
+    // 관리자 페이지에서 전체 메뉴 목록 가져오기
+    public List<MenuListDto> getAllMenus() {
+        return menusRepository.findAll(Sort.by(Sort.Order.asc("menuOrder"))).stream()
+                .map(MenuListDto::fromEntity)
+                .toList();
     }
 
     public List<MenusEntity> getMenusByCategory(long categoryNo) {
@@ -45,6 +48,7 @@ public class MenusService {
         return menusRepository.findByMenuCategoryNo(category);
     }
 
+    // 게시판 리스트 네비바에 뿌리기
     public List<MenusEntity> getAccessibleMenus(List<String> userRoles) {
         List<MenusEntity> allMenus = menusRepository.findAll();
         return allMenus.stream()
@@ -116,13 +120,17 @@ public class MenusService {
     // 메뉴 수정
     @Transactional
     public MenusEntity updateMenu(Long menuNo, MenuUpdateRequest request) {
+        // 메뉴 찾기
         MenusEntity menu = menusRepository.findById(menuNo)
                 .orElseThrow(() -> new EntityNotFoundException("메뉴를 찾을 수 없습니다."));
+
         CategoryEntity category = null;
         if (request.getCategoryNo() != null) {
             category = categoryRepository.findById(request.getCategoryNo())
                     .orElseThrow(() -> new EntityNotFoundException("카테고리를 찾을 수 없습니다."));
         }
+
+        // 메뉴 업데이트
         menu.updateMenu(
                 request.getMenuOrder(),
                 request.getMenuName(),
@@ -130,21 +138,46 @@ public class MenusService {
                 category != null ? category : menu.getMenuCategoryNo()
         );
 
-        if (request.getRoleNos() != null) {
-            Set<RolesEntity> currentRoles = new HashSet<>(menu.getRoles());
-            for (RolesEntity role : currentRoles) {
-                menu.removeRole(role);
+        if (request.getPermissions() != null) {
+
+            List<MenuPermissionsEntity> currentPermissions = menuPermissionsRepository.findByMenuNo(menu);
+
+            for (MenuPermissionRequest permissionRequest : request.getPermissions()) {
+
+                RolesEntity role = rolesRepository.findById(permissionRequest.getRoleNo())
+                        .orElseThrow(() -> new EntityNotFoundException("권한을 찾을 수 없습니다."));
+
+                PermissionTypesEntity permissionTypes = permissionTypesRepository.findByPermissionName(permissionRequest.getPermissionType())
+                        .orElseThrow(() -> new EntityNotFoundException("조회 타입을 찾을 수 없습니다"));
+
+                Optional<MenuPermissionsEntity> existingPermission = menuPermissionsRepository.findByMenuNoAndRoleNoAndPermissionTypeNo(
+                 menu, role, permissionTypes);
+
+
+                if (existingPermission.isEmpty()) {
+                    // 각 권한이 존재하지 않으면 새로 추가
+                    MenuPermissionsEntity permission = MenuPermissionsEntity.builder()
+                            .menuNo(menu)
+                            .roleNo(role)
+                            .permissionTypeNo(permissionTypes)
+                            .build();
+
+                    menuPermissionsRepository.save(permission);
+                }
+
+                currentPermissions.removeIf(permission ->
+                        permission.getRoleNo().equals(role) &&
+                                permission.getPermissionTypeNo().equals(permissionTypes)
+                );
             }
 
-            for (Long roleNo : request.getRoleNos()) {
-                RolesEntity role = rolesRepository.findById(roleNo)
-                        .orElseThrow(() -> new EntityNotFoundException("권한을 찾을 수 없습니다."));
-                menu.addRole(role);
+            if (!currentPermissions.isEmpty()) {
+                menuPermissionsRepository.deleteAll(currentPermissions);
             }
         }
+
         return menu;
     }
-
 
     public boolean hasReadPermission(MenusEntity menu, List<String> userRoles) {
         return checkPermission(menu, userRoles, PermissionNames.READ);
@@ -167,6 +200,17 @@ public class MenusService {
         );
     }
 
+    @Transactional
+    public void updateMenuOrder(List<MenusOrderDto> orderList) {
+        for (MenusOrderDto order : orderList) {
+            MenusEntity menus = menusRepository.findById(order.getMenuNo())
+                    .orElseThrow(() -> new RuntimeException("메뉴를 찾을 수 없습니다"));
+
+            menus.updateMenuOrder(order.getMenuOrder());
+
+            menusRepository.save(menus);
+        }
+    }
 
     // 게시판 삭제 가능 - 게시판 삭제 시 하위 게시글 전부 삭제되도록
 }

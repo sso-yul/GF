@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 public class MenusController {
     private final MenusService menusService;
 
-    @GetMapping
+    // 내비바에 뿌리는 용도
+    @GetMapping("/list")
     public ResponseEntity<List<MenusDto>> getAccessibleMenus(Authentication authentication) {
         List<String> userRoles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

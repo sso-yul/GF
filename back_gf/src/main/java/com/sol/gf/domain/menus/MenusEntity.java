@@ -1,11 +1,14 @@
 package com.sol.gf.domain.menus;
 
 import com.sol.gf.domain.category.CategoryEntity;
+import com.sol.gf.domain.permission.MenuPermissionsEntity;
 import com.sol.gf.domain.roles.RolesEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -42,9 +45,12 @@ public class MenusEntity {
     )
     private Set<RolesEntity> roles = new HashSet<>();
 
+    @OneToMany(mappedBy = "menuNo")
+    private List<MenuPermissionsEntity> permissions = new ArrayList<>();
+
     // 수정 메서드
-    public void updateMenu(Long menuNo, String menuName, String menuUrl, CategoryEntity categoryEntity) {
-        this.menuNo = menuNo;
+    public void updateMenu(Long menuOrder, String menuName, String menuUrl, CategoryEntity categoryEntity) {
+        this.menuOrder = menuOrder;
         this.menuName = menuName;
         this.menuUrl = menuUrl;
         this.menuCategoryNo = categoryEntity;
@@ -54,5 +60,9 @@ public class MenusEntity {
     }
     public void removeRole(RolesEntity role) {
         this.roles.remove(role);
+    }
+
+    public void updateMenuOrder(Long menuOrder) {
+        this.menuOrder = menuOrder;
     }
 }

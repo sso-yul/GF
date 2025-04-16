@@ -48,8 +48,9 @@ public class AdminController {
 
     // 메뉴 수정 - 20250414~
     @PostMapping("/manager/menus/update")
-    public ResponseEntity<?> updateMenus(@RequestBody Long menuNo, @RequestBody MenuUpdateRequest menuUpdateRequest) {
+    public ResponseEntity<?> updateMenus(@RequestBody MenuUpdateRequest menuUpdateRequest) {
         try {
+            Long menuNo = menuUpdateRequest.getMenuNo();
             MenusEntity updateMenus = menusService.updateMenu(menuNo, menuUpdateRequest);
             if (updateMenus == null) {
                 return null;
@@ -59,4 +60,17 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    // 전체 메뉴 목록 가져오기
+    @GetMapping("/manager/menus/all")
+    public ResponseEntity<List<MenuListDto>> findAll() {
+        List<MenuListDto> menuList = menusService.getAllMenus();
+        return ResponseEntity.ok(menuList);
+    }
+
+    @PutMapping("/manager/menus/order")
+    public void updateMenuOrder(@RequestBody List<MenusOrderDto> orderList) {
+        menusService.updateMenuOrder(orderList);
+    }
+
 }
