@@ -1,10 +1,10 @@
 import { useState, useEffect, JSX } from "react"
 import { TableProps } from "../../stores/types"
 import "../../styles/table.css";
-import "../../styles/button.css"
+import "../../styles/button.css";
+import "../../styles/tableCheckbox.css";
 
 const Table = ({
-    tableId,
     columns,
     data = [],
     selectColumns = [],
@@ -160,26 +160,23 @@ const Table = ({
                                         return (
                                             <td key={colIndex} className="multi-checkbox-cell">
                                                 {checkboxOptions[column]?.map((option, i) => {
-                                                    const isChecked =
+                                                    const isChecked = 
                                                         Array.isArray(row[column]) && row[column].includes(option);
                                                     return (
                                                         <div key={i} className="checkbox-item">
-                                                            <input
-                                                                type="checkbox"
-                                                                id={`${tableId || "table"}-checkbox-${rowIndex}-${column}-${i}`}
-                                                                checked={isChecked}
-                                                                onChange={(e) =>
+                                                            <button
+                                                                className={`custom-checkbox ${isChecked ? 'checked' : ''}`}
+                                                                onClick={() =>
                                                                     handleMultiCheckboxChange(
                                                                         column,
                                                                         option,
-                                                                        e.target.checked,
+                                                                        !isChecked,
                                                                         rowIndex
                                                                     )
                                                                 }
-                                                            />
-                                                            <label htmlFor={`${tableId || "table"}-checkbox-${rowIndex}-${column}-${i}`}>
+                                                            >
                                                                 {option}
-                                                            </label>
+                                                            </button>
                                                         </div>
                                                     );
                                                 })}

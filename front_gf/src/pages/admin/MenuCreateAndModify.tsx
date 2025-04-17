@@ -324,7 +324,7 @@ const MenuCreateAndModify = ({}): JSX.Element => {
             {/* 메뉴 생성 섹션 - 관리자만 가능 */}
             {isLoggedIn && hasAdminAccess && (
                 <div className="section-container">
-                    <span className="section-title">메뉴 생성</span>
+                    <p className="section-title">메뉴 생성</p>
                     <Table
                         tableId="create"
                         columns={["템플릿", "이름", "주소", "조회 권한", "작성 권한"]}
@@ -349,6 +349,7 @@ const MenuCreateAndModify = ({}): JSX.Element => {
             
             <div>
             {/* 메뉴 목록 조회 및 수정 섹션 */}
+                <p>메뉴 수정</p>
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                     <SortableContext
                         items={modifyTableData.map((item) => item.menuNo)}

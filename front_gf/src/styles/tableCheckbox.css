@@ -1,0 +1,28 @@
+.custom-checkbox {
+    width: auto;
+    min-width: auto;
+    height: auto;
+    border-radius: 5px;
+    background-color: white;
+    border: 1px solid rgb(120, 98, 199);
+    
+    color: rgb(120, 98, 199);
+    
+    font-size: 0.75rem;
+    text-align: center;
+    
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    margin: 4px;
+    padding: 3px;
+}
+
+.custom-checkbox:hover {
+    background-color: rgb(182, 169, 228);
+    color: white;
+}
+
+.custom-checkbox.checked {
+    background-color: rgb(120, 98, 199);
+    color: white;
+}
