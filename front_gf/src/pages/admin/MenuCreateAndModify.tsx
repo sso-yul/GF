@@ -1,4 +1,6 @@
 import { JSX, useState, useEffect } from "react";
+import useAuthStore from "../../stores/useAuthStore";
+import { authApi } from "../../api/api.auth";
 import { createMenu, getRoles, getMenuList, updateMenu, updateMenuOrder } from "../../api/api.manager";
 import { MenuCreateRequest, MenuPermissionRequest, Roles, MenuList } from "../../stores/types";
 import { categoryMap, templateOptions } from "../../stores/category";
@@ -23,6 +25,10 @@ import IconButton from "../../components/button/IconButton";
 import { faSort, faPenToSquare, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const MenuCreateAndModify = ({}): JSX.Element => {
+    // 관리자만 메뉴 생성 테이블 보이도록 함
+    const { isLoggedIn, user } = useAuthStore();
+    const [hasAdminAccess, setHasAdminAccess] = useState(false);
+
     // 메뉴 생성 관련 상태
     const [createTableData, setCreateTableData] = useState<any[]>([{}]);
     const [menuName, setMenuName] = useState("");
@@ -278,6 +284,15 @@ const MenuCreateAndModify = ({}): JSX.Element => {
 
     // 역할 정보 로드
     useEffect(() => {
+        const verifyRole = async () => {
+            if (isLoggedIn) {
+                const result = await authApi.checkAdmin();
+                setHasAdminAccess(result);
+            } else {
+                setHasAdminAccess(false);
+            }
+        };
+        
         const fetchRoles = async () => {
             try {
                 const rolesData = await getRoles();
@@ -293,9 +308,9 @@ const MenuCreateAndModify = ({}): JSX.Element => {
                 console.error("역할 정보 로드 실패:", error);
             }
         };
-        
+        verifyRole();
         fetchRoles();
-    }, []);
+    }, [isLoggedIn, user]);
     
     // 역할 정보 로드 후 메뉴 목록 로드
     useEffect(() => {
@@ -306,29 +321,31 @@ const MenuCreateAndModify = ({}): JSX.Element => {
 
     return (
         <div className="menu-container">
-            {/* 메뉴 생성 섹션 */}
-            <div className="section-container">
-                <span className="section-title">메뉴 생성</span>
-                <Table
-                    tableId="create"
-                    columns={["템플릿", "이름", "주소", "조회 권한", "작성 권한"]}
-                    data={createTableData}
-                    selectColumns={["템플릿"]}
-                    inputColumns={["이름", "주소"]}
-                    multiCheckboxColumns={["조회 권한", "작성 권한"]}
-                    checkboxOptions={createCheckboxOptions()}
-                    selectOptions={selectOptions}
-                    onEdit={handleCreateTableEdit}
-                />
-                <div className="button-container">
-                    <button 
-                        className="create-button"
-                        onClick={handleCreateMenu}
-                    >
-                        메뉴 생성
-                    </button>
+            {/* 메뉴 생성 섹션 - 관리자만 가능 */}
+            {isLoggedIn && hasAdminAccess && (
+                <div className="section-container">
+                    <span className="section-title">메뉴 생성</span>
+                    <Table
+                        tableId="create"
+                        columns={["템플릿", "이름", "주소", "조회 권한", "작성 권한"]}
+                        data={createTableData}
+                        selectColumns={["템플릿"]}
+                        inputColumns={["이름", "주소"]}
+                        multiCheckboxColumns={["조회 권한", "작성 권한"]}
+                        checkboxOptions={createCheckboxOptions()}
+                        selectOptions={selectOptions}
+                        onEdit={handleCreateTableEdit}
+                    />
+                    <div className="button-container">
+                        <button 
+                            className="create-button"
+                            onClick={handleCreateMenu}
+                        >
+                            메뉴 생성
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
             
             <div>
             {/* 메뉴 목록 조회 및 수정 섹션 */}

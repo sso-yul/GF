@@ -8,6 +8,9 @@ import com.sol.gf.domain.roles.RolesRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -142,6 +145,8 @@ public class MenusService {
 
             List<MenuPermissionsEntity> currentPermissions = menuPermissionsRepository.findByMenuNo(menu);
 
+            List<Long> editableRoleNos = getEditableRoleNosForCurrentUser();
+
             for (MenuPermissionRequest permissionRequest : request.getPermissions()) {
 
                 RolesEntity role = rolesRepository.findById(permissionRequest.getRoleNo())
@@ -166,13 +171,18 @@ public class MenusService {
                 }
 
                 currentPermissions.removeIf(permission ->
-                        permission.getRoleNo().equals(role) &&
+                        editableRoleNos.contains(permission.getRoleNo().getRoleNo()) &&
+                                permission.getRoleNo().equals(role) &&
                                 permission.getPermissionTypeNo().equals(permissionTypes)
                 );
             }
 
-            if (!currentPermissions.isEmpty()) {
-                menuPermissionsRepository.deleteAll(currentPermissions);
+            List<MenuPermissionsEntity> deletablePermissions = currentPermissions.stream()
+                    .filter(permission -> editableRoleNos.contains(permission.getRoleNo().getRoleNo()))
+                    .collect(Collectors.toList());
+
+            if (!deletablePermissions.isEmpty()) {
+                menuPermissionsRepository.deleteAll(deletablePermissions);
             }
         }
 
@@ -198,6 +208,32 @@ public class MenusService {
         return menuPermissionsRepository.existsByMenuNoAndRoleNoRoleNameInAndPermissionTypeNo(
                 menu, userRoles, permissionType
         );
+    }
+
+    private List<Long> getEditableRoleNosForCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || auth.getAuthorities() == null) {
+            return Collections.emptyList();
+        }
+
+        Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+
+        if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            List<RolesEntity> roles = rolesRepository.findAll();
+            return roles.stream()
+                    .map(RolesEntity::getRoleNo)
+                    .collect(Collectors.toList());
+        }
+
+        if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER"))) {
+            List<RolesEntity> roles = rolesRepository.findByRoleNameIn(List.of("ROLE_USER", "ROLE_VISITOR"));
+            return roles.stream()
+                    .map(RolesEntity::getRoleNo)
+                    .collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
     }
 
     // 메뉴 순서 변경
