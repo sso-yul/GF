@@ -53,7 +53,7 @@ public class MenusService {
 
     // 게시판 리스트 네비바에 뿌리기
     public List<MenusEntity> getAccessibleMenus(List<String> userRoles) {
-        List<MenusEntity> allMenus = menusRepository.findAll();
+        List<MenusEntity> allMenus = menusRepository.findAllWithCategory();
         return allMenus.stream()
                 .filter(menu -> hasReadPermission(menu, userRoles))
                 .collect(Collectors.toList());

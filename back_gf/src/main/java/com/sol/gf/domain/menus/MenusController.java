@@ -44,13 +44,26 @@ public class MenusController {
     private List<MenusDto> convertToDTO(List<MenusEntity> menus, List<String> userRoles) {
         return menus.stream()
                 .map(menu -> MenusDto.builder()
+                        .menuNo(menu.getMenuNo())
                         .menuOrder(menu.getMenuOrder())
                         .menuName(menu.getMenuName())
                         .menuUrl(menu.getMenuUrl())
                         .categoryNo(menu.getMenuCategoryNo().getCategoryNo())
+                        .categoryName(transformCategoryName(menu.getMenuCategoryNo().getCategoryName()))
                         .canWrite(menusService.hasWritePermission(menu, userRoles))
                         .roles(userRoles)
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    private String transformCategoryName(String categoryName) {
+        return switch (categoryName) {
+            case "Basic" -> "basic";
+            case "Character" -> "char";
+            case "Chatter" -> "chat";
+            case "Picture" -> "pic";
+            case "Thread" -> "thread";
+            default -> categoryName;
+        };
     }
 }

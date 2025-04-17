@@ -1,7 +1,23 @@
-export default function Basic() {
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+
+
+function Basic() {
+    const { customUrl } = useParams();
+
+    useEffect(() => {
+        if (customUrl) {
+        }
+    }, [customUrl]);
+
     return (
         <>
-            기본 포스트 페이지
+            {customUrl ? (
+                <span>Basic 템플릿 - {customUrl} 메뉴</span>
+            ) : (
+                <span>Basic 템플릿 기본 화면</span>
+            )}
         </>
     )
 }
+export default Basic;

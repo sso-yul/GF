@@ -85,23 +85,38 @@ const router = createBrowserRouter([
             // 게시글 유형
             {   // 1. 기본
                 path: "/basic",
-                element: <Basic />
+                children: [
+                    { path: "", element: <Basic /> },
+                    { path: ":customUrl", element: <Basic /> }
+                ]
             },
             {   // 2. 캐릭터 상세
                 path: "/char",
-                element: <Character />
+                children: [
+                    { path: "", element: <Character /> },
+                    { path: ":customUrl", element: <Character /> }
+                ]
             },
             {   // 3. 채팅 형식
                 path: "/chat",
-                element: <Chatter />
+                children: [
+                    { path: "", element: <Chatter /> },
+                    { path: ":customUrl", element: <Chatter /> }
+                ]
             },
             {   // 4. 간단하게 사진만 올림
                 path: "/pic",
-                element: <Picture />
+                children: [
+                    { path: "", element: <Picture /> },
+                    { path: ":customUrl", element: <Picture /> }
+                ]
             },
             {   // 5. 썰 타래 형식
                 path: "/thread",
-                element: <Thread />
+                children: [
+                    { path: "", element: <Thread /> },
+                    { path: ":customUrl", element: <Thread /> }
+                ]
             },
         ]
     },

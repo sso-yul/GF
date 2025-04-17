@@ -13,10 +13,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MenusDto {
+    private long menuNo;
     private long menuOrder;
     private String menuName;
     private String menuUrl;
     private long categoryNo;
+    private String categoryName;
     private boolean canWrite;
     private List<String> roles;
 }

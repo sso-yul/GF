@@ -34,7 +34,7 @@ public class MenusEntity {
     private String menuUrl;
 
     @ManyToOne
-    @JoinColumn(name = "menu_category_no")
+    @JoinColumn(name = "menu_category_no", referencedColumnName = "category_no")
     private CategoryEntity menuCategoryNo;
 
     @ManyToMany
