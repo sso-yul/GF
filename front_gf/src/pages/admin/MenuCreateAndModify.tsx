@@ -19,6 +19,8 @@ import {
     sortableKeyboardCoordinates,
     verticalListSortingStrategy
 } from "@dnd-kit/sortable";
+import IconButton from "../../components/button/IconButton";
+import { faSort, faPenToSquare, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const MenuCreateAndModify = ({}): JSX.Element => {
     // 메뉴 생성 관련 상태
@@ -117,15 +119,14 @@ const MenuCreateAndModify = ({}): JSX.Element => {
             };
             
             await createMenu(menuCreateRequest);
-            // 성공 후 상태 초기화나 알림 처리
             setCreateTableData([{}]);
             setMenuName("");
             setMenuUrl("");
             
-            // 메뉴 목록 새로고침
             fetchMenuList();
+            alert("메뉴 생성이 완료되었습니다.");
         } catch (error) {
-            console.error("메뉴 생성 실패:", error);
+            alert("메뉴 생성을 실패했습니다.");
         }
     };
 
@@ -133,13 +134,10 @@ const MenuCreateAndModify = ({}): JSX.Element => {
     const handleUpdateMenu = async (row: any, _rowIndex?: number) => {
         const menuNo = row.menuNo;
         if (!menuNo) {
-            console.error("메뉴 번호가 없습니다.");
+            alert("메뉴 번호가 없습니다. 새로고침 후 다시 시도해주세요.");
             return;
         }
-
-        console.log("수정 시작:", row); 
     
-        // 업데이트할 권한 정보 추출
         const updatedPermissions: MenuPermissionRequest[] = [];
     
         if (Array.isArray(row["조회 권한"])) {
@@ -181,15 +179,14 @@ const MenuCreateAndModify = ({}): JSX.Element => {
         try {
             await updateMenu(menuUpdateRequest)
                 .then(() => {
-                    console.log("메뉴 수정 성공");
-                    // 성공 메시지 표시 또는 기타 처리
-                    fetchMenuList(); // 수정 후 목록 새로고침
+                    fetchMenuList();
+                    alert("메뉴 수정이 완료되었습니다.");
                 })
-                .catch(err => {
-                    console.error("메뉴 수정 API 호출 실패:", err);
+                .catch(() => {
+                    alert("메뉴 수정을 실패했습니다.");
                 });
         } catch (error) {
-            console.error("메뉴 수정 실패:", error);
+            alert("메뉴 수정 실패");
         }
     };
 
@@ -265,12 +262,19 @@ const MenuCreateAndModify = ({}): JSX.Element => {
         }));
     
         try {
-            await updateMenuOrder(orderUpdatePayload); // API 호출
+            await updateMenuOrder(orderUpdatePayload);
+            fetchMenuList();
             console.log("메뉴 순서 업데이트 성공");
         } catch (error) {
             console.error("메뉴 순서 업데이트 실패:", error);
         }
     };
+
+    const handleOrderMenu = (row: any, index?: number) => {};
+
+    const handleDeleteMenu = async (deleteData: MenuCreateRequest) => {
+        return null;
+    }
 
     // 역할 정보 로드
     useEffect(() => {
@@ -306,12 +310,13 @@ const MenuCreateAndModify = ({}): JSX.Element => {
             <div className="section-container">
                 <span className="section-title">메뉴 생성</span>
                 <Table
+                    tableId="create"
                     columns={["템플릿", "이름", "주소", "조회 권한", "작성 권한"]}
                     data={createTableData}
                     selectColumns={["템플릿"]}
                     inputColumns={["이름", "주소"]}
                     multiCheckboxColumns={["조회 권한", "작성 권한"]}
-                    checkboxOptions={createCheckboxOptions()} // 함수로 호출하여 새로운 참조 생성
+                    checkboxOptions={createCheckboxOptions()}
                     selectOptions={selectOptions}
                     onEdit={handleCreateTableEdit}
                 />
@@ -325,38 +330,66 @@ const MenuCreateAndModify = ({}): JSX.Element => {
                 </div>
             </div>
             
+            <div>
             {/* 메뉴 목록 조회 및 수정 섹션 */}
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <SortableContext
-                    items={modifyTableData.map((item) => item.menuNo)}
-                    strategy={verticalListSortingStrategy}
-                >
-                    <Table
-                        columns={["menuNo", "템플릿", "이름", "주소", "조회 권한", "작성 권한", "작업"]}
-                        data={modifyTableData}
-                        selectColumns={["템플릿"]}
-                        inputColumns={["이름", "주소"]}
-                        multiCheckboxColumns={["조회 권한", "작성 권한"]}
-                        checkboxOptions={createCheckboxOptions()} // 함수로 호출하여 새로운 참조 생성
-                        selectOptions={selectOptions}
-                        hiddenColumns={["menuNo"]}
-                        actionColumn="작업"
-                        actionButtons={[
-                            {
-                                label: "수정",
-                                onClick: handleUpdateMenu, // 이미 수정됨
-                                className: "edit-button"
-                            }
-                        ]}
-                        onEdit={handleModifyTableEdit}
-                        rowWrapperComponent={(row, idx, content) => (
-                            <SortableRow key={row.menuNo} id={row.menuNo}>
-                                {content}
-                            </SortableRow>
-                        )}
-                    />
-                </SortableContext>
-            </DndContext>
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                    <SortableContext
+                        items={modifyTableData.map((item) => item.menuNo)}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        <Table
+                            tableId="update"
+                            columns={["menuNo", "순서", "템플릿", "이름", "주소", "조회 권한", "작성 권한", "수정", "삭제"]}
+                            data={modifyTableData}
+                            selectColumns={["템플릿"]}
+                            inputColumns={["이름", "주소"]}
+                            multiCheckboxColumns={["조회 권한", "작성 권한"]}
+                            checkboxOptions={createCheckboxOptions()}
+                            selectOptions={selectOptions}
+                            hiddenColumns={["menuNo"]}
+                            actionColumns={{
+                                "순서": {
+                                    buttons: [
+                                        {
+                                            label: <IconButton icon={faSort} />,
+                                            onClick: handleOrderMenu,
+                                            className: "edit-order"
+                                        }
+                                    ]
+                                },
+                                "수정": {
+                                    buttons: [
+                                        {
+                                            label: <IconButton icon={faPenToSquare} />,
+                                            onClick: handleUpdateMenu,
+                                            className: "edit-button"
+                                        }
+                                    ]
+                                },
+                                "삭제": {
+                                    buttons: [
+                                        {
+                                            label: <IconButton icon={faXmark} color="red" />,
+                                            onClick: handleDeleteMenu,
+                                            className: "delete-button"
+                                        }
+                                    ]
+                                }
+                            }}
+                            onEdit={handleModifyTableEdit}
+                            rowWrapperComponent={(row, idx, content) => (
+                                <SortableRow
+                                    key={row.menuNo}
+                                    id={row.menuNo}
+                                    handleColumn="순서"
+                                >
+                                    {content}
+                                </SortableRow>
+                            )}
+                        />
+                    </SortableContext>
+                </DndContext>
+            </div>
         </div>
     );
 };

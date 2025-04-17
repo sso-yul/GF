@@ -38,6 +38,7 @@ export interface AuthState {
 }
 
 export interface TableProps {
+    tableId?: string;
     columns: string[];
     data: any[];
     inputColumns?: string[];
@@ -49,8 +50,17 @@ export interface TableProps {
     selectOptions?: { [key: string]: string[] };
     hiddenColumns?: string[];
     actionColumn?: string;
+    actionColumns?: {
+        [columnName: string]: {
+            buttons: Array<{
+                label: React.ReactNode;
+                onClick: (row: any, index?: number) => void;
+                className?: string;
+            }>;
+        };
+    }
     actionButtons?: Array<{
-        label: string;
+        label: React.ReactNode;
         onClick: (row: any, rowIndex: number) => void;
         className?: string;
     }>;

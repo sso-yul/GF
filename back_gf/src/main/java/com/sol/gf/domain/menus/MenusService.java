@@ -200,6 +200,7 @@ public class MenusService {
         );
     }
 
+    // 메뉴 순서 변경
     @Transactional
     public void updateMenuOrder(List<MenusOrderDto> orderList) {
         for (MenusOrderDto order : orderList) {

@@ -1,3 +1,19 @@
+.button {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    outline: none;
+}
+
+/* 포커스 시 외곽선 제거 */
+.button:focus {
+    outline: none;
+}
+
 // 모든 테이블 공통
 table {
     border-collapse : collapse;
@@ -5,7 +21,7 @@ table {
 }
 
 tbody tr:nth-child(odd) {
-    background-color:rgb(243, 243, 243);
+    background-color:rgb(245, 245, 245);
 }
 
 th {

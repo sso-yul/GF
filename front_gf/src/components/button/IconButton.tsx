@@ -5,7 +5,7 @@ import { ButtonProps } from "./Button.types";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 type IconButtonProps = Omit<ButtonProps, "iconPosition"> & {
-    icon: IconDefinition;
+    icon?: IconDefinition;
     title?: string;
     navigateTo?: string;
 };

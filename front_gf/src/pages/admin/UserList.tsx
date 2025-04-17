@@ -5,6 +5,7 @@ import Table from "../../components/table/Table";
 import { TableUser } from "../../stores/types";
 import "../../styles/table.css";
 import Button from "../../components/button/Button";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function UserList() {
     const [users, setUsers] = useState<TableUser[]>([]);
@@ -68,6 +69,10 @@ export default function UserList() {
         }
     };
 
+    const handleDelete = (deleteData: TableUser[]) => {
+        return null;
+    }
+
     return (
         <>
             <div className="user-list-header">
@@ -84,9 +89,17 @@ export default function UserList() {
             <div className="user-container">
                 <div className="user-table">
                     <Table
-                        columns={["ID", "NAME", "ROLE", ""]}
+                        columns={["ID", "NAME", "ROLE", "삭제"]}
                         data={users}
                         selectColumns={["ROLE"]}
+                        actionColumn="삭제"
+                        actionButtons={[
+                            {
+                                label: <Button iconPosition="only" icon={faXmark} color="red" />,
+                                onClick: handleDelete,
+                                className: "delete-button"
+                            }
+                        ]}
                         options={{ ROLE: roles }}
                         onEdit={handleEdit}
                     />

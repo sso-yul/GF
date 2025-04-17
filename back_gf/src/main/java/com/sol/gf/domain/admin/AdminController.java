@@ -46,7 +46,7 @@ public class AdminController {
         }
     }
 
-    // 메뉴 수정 - 20250414~
+    // 메뉴 수정
     @PostMapping("/manager/menus/update")
     public ResponseEntity<?> updateMenus(@RequestBody MenuUpdateRequest menuUpdateRequest) {
         try {
@@ -68,6 +68,7 @@ public class AdminController {
         return ResponseEntity.ok(menuList);
     }
 
+    // 메뉴 순서 변경하기
     @PutMapping("/manager/menus/order")
     public void updateMenuOrder(@RequestBody List<MenusOrderDto> orderList) {
         menusService.updateMenuOrder(orderList);

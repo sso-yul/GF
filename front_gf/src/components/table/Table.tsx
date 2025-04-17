@@ -1,10 +1,10 @@
 import { useState, useEffect, JSX } from "react"
-import IconButton from "../button/IconButton";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { TableProps } from "../../stores/types"
 import "../../styles/table.css";
+import "../../styles/button.css"
 
 const Table = ({
+    tableId,
     columns,
     data = [],
     selectColumns = [],
@@ -16,6 +16,7 @@ const Table = ({
     selectOptions = {},
     hiddenColumns = [],
     actionColumn,
+    actionColumns,
     actionButtons = [],
     rowWrapperComponent,
     onEdit
@@ -94,17 +95,6 @@ const Table = ({
         }
     }
 
-    const handleDeleteRow = (index: number) => {
-        const updatedData = [...tableData];
-        updatedData.splice(index, 1);
-        setTableData(updatedData);
-
-        if (onEdit) {
-            onEdit(updatedData);
-        }
-    }
-
-
     return (
         <>
             <table>
@@ -176,7 +166,7 @@ const Table = ({
                                                         <div key={i} className="checkbox-item">
                                                             <input
                                                                 type="checkbox"
-                                                                id={`checkbox-${rowIndex}-${column}-${i}`}
+                                                                id={`${tableId || "table"}-checkbox-${rowIndex}-${column}-${i}`}
                                                                 checked={isChecked}
                                                                 onChange={(e) =>
                                                                     handleMultiCheckboxChange(
@@ -187,7 +177,7 @@ const Table = ({
                                                                     )
                                                                 }
                                                             />
-                                                            <label htmlFor={`checkbox-${rowIndex}-${column}-${i}`}>
+                                                            <label htmlFor={`${tableId || "table"}-checkbox-${rowIndex}-${column}-${i}`}>
                                                                 {option}
                                                             </label>
                                                         </div>
@@ -197,28 +187,38 @@ const Table = ({
                                         );
                                     } else if (column === actionColumn) {
                                         return (
-                                            <td key={colIndex} className="action-cell">
+                                            <td 
+                                                key={colIndex} 
+                                                data-column={column}
+                                                className="action-cell"
+                                            >
                                                 {actionButtons.map((button, i) => (
-                                                    <button
+                                                    <span
                                                         key={i}
                                                         className={`action-button ${button.className || ''}`}
                                                         onClick={() => button.onClick(row, rowIndex)}
                                                     >
                                                         {button.label}
-                                                    </button>
+                                                    </span>
                                                 ))}
                                             </td>
                                         );
-                                    } else if (column === "") {
+                                    } else if (actionColumns && actionColumns[column]) {
                                         return (
-                                            <td key={colIndex}>
-                                                <IconButton
-                                                    icon={faXmark}
-                                                    color="red"
-                                                    size="small"
-                                                    title="삭제"
-                                                    onClick={() => handleDeleteRow(rowIndex)}
-                                                />
+                                            <td 
+                                                key={colIndex} 
+                                                data-column={column}
+                                                className="action-cell"
+                                            >
+                                                {actionColumns[column].buttons.map((button, i) => (
+                                                    <span
+                                                        key={i}
+                                                        className={`action-button ${button.className || ''}`}
+                                                        onClick={() => button.onClick(row, rowIndex)}
+                                                    >
+                                                        {button.label}
+                                                    </span>
+                                                ))}
                                             </td>
                                         );
                                     } else {
