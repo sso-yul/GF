@@ -126,3 +126,8 @@ export interface SortableMenuListProps {
     items: MenuItem[];
     onUpdateOrder: (updated: MenuItem[]) => void;
 }
+
+export interface PermissionState {
+    hasPermission: boolean;
+    checkPermission: (menuNo: number, permissionType: string, roleNo: number) => Promise<void>;
+}

@@ -58,9 +58,6 @@ public class MenusEntity {
     public void addRole(RolesEntity role) {
         this.roles.add(role);
     }
-    public void removeRole(RolesEntity role) {
-        this.roles.remove(role);
-    }
 
     public void updateMenuOrder(Long menuOrder) {
         this.menuOrder = menuOrder;

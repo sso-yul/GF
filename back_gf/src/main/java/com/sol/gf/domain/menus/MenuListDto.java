@@ -42,6 +42,7 @@ public class MenuListDto {
                         .toList())
                 .permissions(menusEntity.getPermissions().stream()
                         .map(p -> new MenuPermissionRequest(
+                                p.getMenuNo().getMenuNo(),
                                 p.getRoleNo().getRoleNo(),
                                 p.getPermissionTypeNo().getPermissionName())
                         ).

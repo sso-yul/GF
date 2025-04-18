@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MenusRepository extends JpaRepository<MenusEntity, Long> {
@@ -13,4 +14,8 @@ public interface MenusRepository extends JpaRepository<MenusEntity, Long> {
 
     @Query("SELECT m FROM MenusEntity m JOIN FETCH m.menuCategoryNo")
     List<MenusEntity> findAllWithCategory();
+
+    List<MenusEntity> findPermissionsByMenuNo(long menuNo);
+
+    Optional<MenusEntity> findByMenuUrl(String menuUrl);
 }

@@ -210,6 +210,7 @@ public class MenusService {
         );
     }
 
+    // 지금 권한으로 수정 가능한 역할
     private List<Long> getEditableRoleNosForCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -249,5 +250,32 @@ public class MenusService {
         }
     }
 
+    // 게시판 메뉴 번호 별 접근 가능한지 확인
+    public boolean hasPermission(long menuNo, String permissionType, long userRoleNo) {
+        List<MenusEntity> menus = menusRepository.findPermissionsByMenuNo(menuNo);
+
+        return menus.stream().anyMatch(menu -> {
+            boolean hasRole = menu.getRoles().stream()
+                    .anyMatch(role -> role.getRoleNo() == userRoleNo);
+
+            boolean hasPermission = menu.getPermissions().stream()
+                    .anyMatch(p -> p.getPermissionTypeNo().getPermissionName().equalsIgnoreCase(permissionType));
+
+            return hasRole && hasPermission;
+        });
+    }
+
+    // 위를 확인하기 위해 menuno 전송
+    public long getMenuNoByMenuUrl(String menuUrl) {
+        MenusEntity menu = menusRepository.findByMenuUrl(menuUrl)
+                .orElseThrow(() -> new RuntimeException("잘못된 url입니다."));
+
+        return menu.getMenuNo();
+    }
+
+    public MenusEntity findByMenuNo(Long menuNo) {
+        return menusRepository.findById(menuNo)
+                .orElseThrow(() -> new RuntimeException("메뉴 번호 " + menuNo));
+    }
     // 게시판 삭제 가능 - 게시판 삭제 시 하위 게시글 전부 삭제되도록
 }
