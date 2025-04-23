@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import PermissionCheck from "../../components/global/permissionCheck";
 import { getMenuNoByMenuUrl } from "../../api/api.menu";
 
-
 function Basic() {
     const { customUrl } = useParams();
     const [menuNo, setMenuNo] = useState<number | null>(null);
@@ -26,9 +25,9 @@ function Basic() {
     return menuNo !== null ? (
         <PermissionCheck menuNo={menuNo} permissionType="READ">
             {customUrl ? (
-                <span>Thread 템플릿 - {customUrl} 메뉴</span>
+                <span>Basic 템플릿 - {customUrl} 메뉴</span>
             ) : (
-                <span>Thread 템플릿 기본 화면</span>
+                <span>Basic 템플릿 기본 화면</span>
             )}
         </PermissionCheck>
     ) : (

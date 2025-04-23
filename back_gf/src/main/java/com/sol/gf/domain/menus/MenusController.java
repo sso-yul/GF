@@ -1,12 +1,15 @@
 package com.sol.gf.domain.menus;
 
 import com.sol.gf.domain.permission.MenuPermissionRequest;
+import com.sol.gf.domain.roles.RolesEntity;
+import com.sol.gf.domain.roles.RolesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +20,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/menus")
 public class MenusController {
     private final MenusService menusService;
+    private final RolesRepository rolesRepository;
 
     // 내비바에 뿌리는 용도
     @GetMapping("/list")
@@ -50,13 +54,18 @@ public class MenusController {
                 request.getRoleNo()
         );
 
-        // 메뉴 정보 조회
         MenusEntity menu = menusService.findByMenuNo(request.getMenuNo());
 
-        // 응답 맵 생성
+        RolesEntity role = rolesRepository.findById(request.getRoleNo())
+                .orElseThrow(() -> new RuntimeException("역할을 찾을 수 없습니다: " + request.getRoleNo()));
+
+        List<String> userRoles = Collections.singletonList(role.getRoleName());
+
+        MenusDto menuDto = convertToDTO(Collections.singletonList(menu), userRoles).get(0);
+
         Map<String, Object> response = new HashMap<>();
         response.put("hasPermission", hasPermission);
-        response.put("menu", menu);
+        response.put("menu", menuDto);
 
         return ResponseEntity.ok(response);
     }

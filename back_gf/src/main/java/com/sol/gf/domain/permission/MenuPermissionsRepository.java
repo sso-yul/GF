@@ -17,4 +17,6 @@ public interface MenuPermissionsRepository extends JpaRepository<MenuPermissions
             PermissionTypesEntity permissionTypeNo
     );
     Optional<MenuPermissionsEntity> findByMenuNoAndRoleNoAndPermissionTypeNo(MenusEntity menuNo, RolesEntity roleNo, PermissionTypesEntity permissionTypeNo);
+
+    boolean existsByMenuNoAndRoleNoAndPermissionTypeNo(MenusEntity menuEntity, RolesEntity roleEntity, PermissionTypesEntity permissionTypeEntity);
 }

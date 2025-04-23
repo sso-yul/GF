@@ -5,6 +5,8 @@ import com.sol.gf.domain.category.CategoryRepository;
 import com.sol.gf.domain.permission.*;
 import com.sol.gf.domain.roles.RolesEntity;
 import com.sol.gf.domain.roles.RolesRepository;
+import com.sol.gf.domain.user.UserEntity;
+import com.sol.gf.domain.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
@@ -24,13 +26,15 @@ public class MenusService {
         public static final String WRITE = "WRITE";
     }
 
+    private final UserRepository userRepository;
     private final MenusRepository menusRepository;
     private final MenuPermissionsRepository menuPermissionsRepository;
     private final RolesRepository rolesRepository;
     private final CategoryRepository categoryRepository;
     private final PermissionTypesRepository permissionTypesRepository;
 
-    public MenusService(MenusRepository menusRepository, MenuPermissionsRepository menuPermissionsRepository, RolesRepository rolesRepository, CategoryRepository categoryRepository, PermissionTypesRepository permissionTypesRepository) {
+    public MenusService(UserRepository userRepository, MenusRepository menusRepository, MenuPermissionsRepository menuPermissionsRepository, RolesRepository rolesRepository, CategoryRepository categoryRepository, PermissionTypesRepository permissionTypesRepository) {
+        this.userRepository = userRepository;
         this.menusRepository = menusRepository;
         this.menuPermissionsRepository = menuPermissionsRepository;
         this.rolesRepository = rolesRepository;
@@ -251,18 +255,18 @@ public class MenusService {
     }
 
     // 게시판 메뉴 번호 별 접근 가능한지 확인
-    public boolean hasPermission(long menuNo, String permissionType, long userRoleNo) {
-        List<MenusEntity> menus = menusRepository.findPermissionsByMenuNo(menuNo);
+    public boolean hasPermission(long menuNo, String permissionType, long roleNo) {
+        MenusEntity menuEntity = menusRepository.findById(menuNo)
+                .orElseThrow(() -> new RuntimeException("메뉴를 찾을 수 없습니다: " + menuNo));
 
-        return menus.stream().anyMatch(menu -> {
-            boolean hasRole = menu.getRoles().stream()
-                    .anyMatch(role -> role.getRoleNo() == userRoleNo);
+        PermissionTypesEntity permissionTypeEntity = permissionTypesRepository.findByPermissionName(permissionType)
+                .orElseThrow(() -> new RuntimeException("권한 타입을 찾을 수 없습니다: " + permissionType));
 
-            boolean hasPermission = menu.getPermissions().stream()
-                    .anyMatch(p -> p.getPermissionTypeNo().getPermissionName().equalsIgnoreCase(permissionType));
+        RolesEntity roleEntity = rolesRepository.findById(roleNo)
+                .orElseThrow(() -> new RuntimeException("역할을 찾을 수 없습니다: " + roleNo));
 
-            return hasRole && hasPermission;
-        });
+        return menuPermissionsRepository.existsByMenuNoAndRoleNoAndPermissionTypeNo(
+                menuEntity, roleEntity, permissionTypeEntity);
     }
 
     // 위를 확인하기 위해 menuno 전송
@@ -276,6 +280,17 @@ public class MenusService {
     public MenusEntity findByMenuNo(Long menuNo) {
         return menusRepository.findById(menuNo)
                 .orElseThrow(() -> new RuntimeException("메뉴 번호 " + menuNo));
+    }
+
+    public long getCurrentUserRoleNo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("인증되지 않은 사용자입니다.");
+        }
+        String userName = authentication.getName();
+        UserEntity user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new RuntimeException("사용자 정보를 찾을 수 없습니다."));
+        return user.getUserRole().getRoleNo();
     }
     // 게시판 삭제 가능 - 게시판 삭제 시 하위 게시글 전부 삭제되도록
 }
