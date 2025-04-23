@@ -22,7 +22,7 @@ import {
     verticalListSortingStrategy
 } from "@dnd-kit/sortable";
 import IconButton from "../../components/button/IconButton";
-import { faSort, faPenToSquare, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faSort, faPenToSquare, faXmark, faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
 
 const MenuCreateAndModify = ({}): JSX.Element => {
     // 관리자만 메뉴 생성 테이블 보이도록 함
@@ -121,9 +121,26 @@ const MenuCreateAndModify = ({}): JSX.Element => {
                 menuUrl,
                 categoryNo,
                 menuOrder,
-                permissions
+                permissions: permissions ?? []
             };
-            
+
+            if(!menuCreateRequest.menuName.trim()) {
+                alert("메뉴의 이름을 입력하세요.");
+                return;
+            }
+            if(!menuCreateRequest.menuUrl.trim()) {
+                alert("메뉴의 주소를 입력하세요.");
+                return;
+            }
+            if (!menuCreateRequest.categoryNo) {
+                alert("메뉴의 템플릿을 선택하세요.");
+                return;
+            }
+            if (menuCreateRequest.permissions?.length === 0) {
+                alert("메뉴의 권한을 설정하세요.");
+                return;
+            }
+    
             await createMenu(menuCreateRequest);
             setCreateTableData([{}]);
             setMenuName("");
@@ -145,7 +162,7 @@ const MenuCreateAndModify = ({}): JSX.Element => {
         }
     
         const updatedPermissions: MenuPermissionRequest[] = [];
-    
+
         if (Array.isArray(row["조회 권한"])) {
             row["조회 권한"].forEach((roleName: string) => {
                 const roleNo = roleMap[roleName];
@@ -183,6 +200,16 @@ const MenuCreateAndModify = ({}): JSX.Element => {
         };
     
         try {
+
+            if(!menuUpdateRequest.menuName.trim()) {
+                alert("메뉴의 이름은 비워둘 수 없습니다.");
+                return;
+            }
+            if(!menuUpdateRequest.menuUrl.trim()) {
+                alert("메뉴의 주소는 비워둘 수 없습니다.");
+                return;
+            }
+
             await updateMenu(menuUpdateRequest)
                 .then(() => {
                     fetchMenuList();
@@ -327,23 +354,26 @@ const MenuCreateAndModify = ({}): JSX.Element => {
                     <p className="section-title">메뉴 생성</p>
                     <Table
                         tableId="create"
-                        columns={["템플릿", "이름", "주소", "조회 권한", "작성 권한"]}
+                        columns={["템플릿", "이름", "주소", "조회 권한", "작성 권한", "저장"]}
                         data={createTableData}
                         selectColumns={["템플릿"]}
                         inputColumns={["이름", "주소"]}
                         multiCheckboxColumns={["조회 권한", "작성 권한"]}
                         checkboxOptions={createCheckboxOptions()}
                         selectOptions={selectOptions}
+                        actionColumns={{
+                            "저장": {
+                                buttons: [
+                                    {
+                                        label: <IconButton icon={faFloppyDisk} />,
+                                        onClick: handleCreateMenu,
+                                        className: "save-menu"
+                                    }
+                                ]
+                            }
+                        }}
                         onEdit={handleCreateTableEdit}
                     />
-                    <div className="button-container">
-                        <button 
-                            className="create-button"
-                            onClick={handleCreateMenu}
-                        >
-                            메뉴 생성
-                        </button>
-                    </div>
                 </div>
             )}
             
@@ -359,7 +389,6 @@ const MenuCreateAndModify = ({}): JSX.Element => {
                             tableId="update"
                             columns={["menuNo", "순서", "템플릿", "이름", "주소", "조회 권한", "작성 권한", "수정", "삭제"]}
                             data={modifyTableData}
-                            selectColumns={["템플릿"]}
                             inputColumns={["이름", "주소"]}
                             multiCheckboxColumns={["조회 권한", "작성 권한"]}
                             checkboxOptions={createCheckboxOptions()}

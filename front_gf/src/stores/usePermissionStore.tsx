@@ -2,14 +2,14 @@ import { create } from "zustand";
 import api from "../api/api";
 
 type PermissionState = {
-    hasPermission: boolean;
+    hasPermission: boolean | null;
     loading: boolean;
     checkPermission: (menuNo: number, permissionType: string, roleNo: number) => void;
 };
 
 export const usePermissionStore = create<PermissionState>((set) => ({
-    hasPermission: false,
-    loading: true,
+    hasPermission: null, // null로 초기화하여 아직 체크되지 않았음을 표시
+    loading: false,      // 초기 상태는 로딩 중이 아님
     checkPermission: async (menuNo, permissionType, roleNo) => {
         set({ loading: true });
 

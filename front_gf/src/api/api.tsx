@@ -58,9 +58,27 @@ const refreshTokenFn = async (): Promise<string> => {
     console.error("토큰 리프레시 실패: ", error);
     // 리프레시 실패 시 로그아웃 처리
     useAuthStore.getState().signout();
-    window.location.href = "/signin";
+    
+    // 현재 위치가 로그인이 필요한 페이지인지 확인
+    const requiresAuth = isAuthRequiredPage(window.location.pathname);
+    
+    if (requiresAuth) {
+      window.location.href = "/signin";
+    }
+    
     throw error;
   }
+};
+
+// 로그인이 필요한 페이지인지 확인하는 함수
+function isAuthRequiredPage(path: string): boolean {
+  // 로그인이 필요 없는 페이지 목록
+  const publicPages = ["/"];
+  
+  // 경로가 publicPages 중 하나와 일치하면 로그인 불필요
+  return !publicPages.some(page => 
+    path === page || path.startsWith(`${page}/`)
+  );
 };
 
 // 요청 인터셉터
