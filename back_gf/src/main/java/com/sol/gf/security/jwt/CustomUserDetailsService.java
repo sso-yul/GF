@@ -26,10 +26,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         // 사용자의 역할에 따라 권한 부여
         String role = user.getUserRole().getRoleName();
 
-        return new User(
-                user.getUserId(),
-                user.getUserPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority(role))
-        );
+        return new CustomUserDetails(user);
     }
 }

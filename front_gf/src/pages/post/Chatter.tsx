@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import PermissionCheck from "../../components/global/permissionCheck";
+import PermissionCheck from "../../components/global/PermissionCheck";
 import { getMenuNoByMenuUrl } from "../../api/api.menu";
 
 function Chatter() {

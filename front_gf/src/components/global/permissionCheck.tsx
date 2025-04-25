@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePermissionStore } from "../../stores/usePermissionStore";
+import { getCookie } from "../../api/api.cookie";
+import { refreshTokenFn } from "../../api/api";
 import { convertRoleNameToRoleNo } from "../../utils/utils";
 import useAuthStore from "../../stores/useAuthStore";
 
@@ -22,30 +24,39 @@ const PermissionCheck: React.FC<PermissionCheckProps> = ({ menuNo, permissionTyp
     const isLoggedIn = useAuthStore(state => state.isLoggedIn);
 
     useEffect(() => {
-        // 이미 권한 체크 중이면 중복 실행 방지
         if (isChecking) return;
-        
+    
         const checkUserPermission = async () => {
-            // 로그인한 사용자만 권한 체크 수행
-            if (isLoggedIn && user) {
-                setIsChecking(true);
-                const roleNo = convertRoleNameToRoleNo(user.roleName || "");
-                
-                if (roleNo !== 0) {
-                    checkPermission(menuNo, permissionType, roleNo);
+            setIsChecking(true);
+    
+            // 토큰이 없고 로그인이 필요한 사용자라면 refresh 시도
+            const token = getCookie("gf_token");
+            const refreshToken = getCookie("gf_refresh_token");
+    
+            if (!token && refreshToken && user) {
+                try {
+                    await refreshTokenFn();
+                } catch (e) {
+                    console.error("토큰 자동 갱신 실패");
                 }
-                setIsChecking(false);
             }
+    
+            // 실제 권한 체크
+            const roleNo = isLoggedIn && user ? convertRoleNameToRoleNo(user.roleName || "") : 5;
+            const isAnonymous = !(isLoggedIn && user);
+    
+            checkPermission(menuNo, permissionType, roleNo, isAnonymous);
+            setIsChecking(false);
         };
-        
+    
         checkUserPermission();
     }, [isLoggedIn, user, menuNo, permissionType, checkPermission, isChecking]);
 
     useEffect(() => {
-        if (isLoggedIn && user && !loading && hasPermission === false) {
-            navigate("/");
+        if (!loading && hasPermission === false) {
+            navigate("/noAccess")
         }
-    }, [isLoggedIn, user, hasPermission, loading, navigate]);
+    }, [hasPermission, loading, navigate]);
 
     return <>{children}</>;
 };

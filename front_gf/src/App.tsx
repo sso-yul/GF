@@ -25,6 +25,7 @@ import Character from "./pages/post/Character";
 import Picture from "./pages/post/Picture";
 import Thread from "./pages/post/Thread";
 import Chatter from "./pages/post/Chatter";
+import NoAccess from "./components/global/NoAccess";
 
 const AuthCheck = ({ children }: { children: React.ReactNode }) => {
         useEffect(() => {
@@ -124,6 +125,9 @@ const router = createBrowserRouter([
     // 로그인, 회원가입
     { path: "/signin", element: <Signin /> },
     { path: "/signup", element: <Signup /> },
+
+    // 접근 권한 없음
+    { path: "/noAccess", element: <NoAccess />}
 ])
 
 function App() {    

@@ -31,10 +31,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 액세스 토큰 없어도 되는 api
         String requestURI = request.getRequestURI();
-        if (requestURI.equals("/api/sign/signin") || requestURI.equals("/api/auth/refresh") || requestURI.equals("/api/user/register")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        boolean isPublic =
+                requestURI.startsWith("/api/menus")
+                        || requestURI.equals("/")
+                        || requestURI.startsWith("/api/auth")
+                        || requestURI.equals("/api/sign/signin");
 
         try {
             String jwt = getJwtFromRequest(request);
@@ -51,24 +52,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
-                    // userId가 null이면 인증 실패로 간주하고 401 반환
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.getWriter().write("Unauthorized: Invalid token");
                     return;
                 }
+            } else if (isPublic) {
+                // 토큰이 없어도 접근 허용되는 경로는 필터 통과
+                filterChain.doFilter(request, response);
+                return;
             } else {
-                // 토큰이 없으면 401 반환
+                // 인증이 필요한 경로인데 토큰이 없음
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Unauthorized: No token found");
                 return;
             }
         } catch (ExpiredJwtException e) {
-            // 토큰이 만료된 경우
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Unauthorized: Token has expired");
             return;
         } catch (JwtException | IllegalArgumentException e) {
-            // 토큰이 잘못된 경우
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Unauthorized: Invalid token");
             return;

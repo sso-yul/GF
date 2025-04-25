@@ -41,12 +41,13 @@ public class MenuListDto {
                                 .build())
                         .toList())
                 .permissions(menusEntity.getPermissions().stream()
-                        .map(p -> new MenuPermissionRequest(
-                                p.getMenuNo().getMenuNo(),
-                                p.getRoleNo().getRoleNo(),
-                                p.getPermissionTypeNo().getPermissionName())
-                        ).
-                        toList())
+                        .map(p -> MenuPermissionRequest.builder()
+                                .menuNo(p.getMenuNo().getMenuNo())
+                                .roleNo(p.getRoleNo().getRoleNo())
+                                .permissionType(p.getPermissionTypeNo().getPermissionName())
+                                .isAnonymous(false)
+                                .build())
+                        .toList())
                 .build();
     }
 }

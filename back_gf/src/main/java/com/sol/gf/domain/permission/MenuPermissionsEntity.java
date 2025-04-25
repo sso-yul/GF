@@ -32,6 +32,5 @@ public class MenuPermissionsEntity {
     @JoinColumn(name = "per_permission_type_no", nullable = false)
     private PermissionTypesEntity permissionTypeNo;
 
-    // equals/hashCode는 permissionId 기준으로 구현
 }
 

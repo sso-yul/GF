@@ -17,7 +17,7 @@ const api: AxiosInstance = axios.create({
 });
 
 // 토큰 갱신 함수 - 중앙에서 관리
-const refreshTokenFn = async (): Promise<string> => {
+export const refreshTokenFn = async (): Promise<string> => {
   try {
     const refreshToken = getCookie("gf_refresh_token");
     const userId = getCookie("gf_user_id");
@@ -84,11 +84,31 @@ function isAuthRequiredPage(path: string): boolean {
 // 요청 인터셉터
 api.interceptors.request.use(
   async (config) => {
+
+    // 익명 사용자 요청인지 확인
+    const isAnonymousRequest = config.headers?.isAnonymous === 'true';
+
+    if (isAnonymousRequest) {
+      // 익명 사용자 요청이면 Authorization 헤더를 추가하지 않고 익명 표시만 추가
+      config.headers.isAnonymous = "true";
+      delete config.headers.Authorization;
+      return config;
+    }
+
     let token = getCookie("gf_token");
     
     // 토큰이 있으면 헤더에 추가
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      // 토큰이 없고 익명 접근 가능한 API인 경우
+      const path = config.url || '';
+      const anonymousAccessiblePaths = ["/menus/list", "/permission-check"];
+      
+      if (anonymousAccessiblePaths.some(p => path.includes(p))) {
+        // 익명 사용자로 요청 표시
+        config.headers.isAnonymous = "true";
+      }
     }
     
     return config;
@@ -101,7 +121,6 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
     // 401 에러이면서 아직 재시도하지 않은 요청인 경우
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -122,7 +141,21 @@ api.interceptors.response.use(
         // 원래 요청 재시도
         return axios(originalRequest);
       } catch (refreshError) {
-        // 갱신 실패 시 오류 반환
+        // 갱신 실패 시 익명 사용자로 처리할지 결정
+        const path = originalRequest.url || '';
+        
+        // 익명 사용자 접근 가능한 API 경로 목록 (예: 메뉴 목록)
+        const anonymousAccessiblePaths = ["/menus/list", "/permission-check"];
+        
+        // 익명 사용자 접근 가능한 경로인 경우
+        if (anonymousAccessiblePaths.some(p => path.includes(p))) {
+          console.log("익명 사용자로 재요청", originalRequest);
+          // 익명 사용자로 재요청
+          originalRequest.headers.isAnonymous = 'true';
+          delete originalRequest.headers.Authorization;
+          return axios(originalRequest);
+        }
+        
         return Promise.reject(refreshError);
       } finally {
         // 갱신 작업 완료 표시
@@ -130,6 +163,19 @@ api.interceptors.response.use(
         refreshTokenPromise = null;
       }
     }
+
+    // 익명 사용자 요청인 경우 처리
+    if (originalRequest.headers?.isAnonymous === 'true') {
+      console.log("익명 사용자로 재요청");
+      // 익명 사용자 요청에는 토큰 갱신을 시도하지 않고 해당 요청을 익명 사용자로 재시도
+      
+      // 원래 요청을 익명 사용자용으로 변경
+      originalRequest.headers.isAnonymous = 'true';
+      delete originalRequest.headers.Authorization; // 인증 헤더 제거
+      
+      return axios(originalRequest);
+    }
+    
 
     return Promise.reject(error);
   }

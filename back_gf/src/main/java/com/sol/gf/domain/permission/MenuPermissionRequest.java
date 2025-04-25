@@ -13,4 +13,5 @@ public class MenuPermissionRequest {
     private long menuNo;
     private long roleNo;
     private String permissionType;
+    private boolean isAnonymous;
 }

@@ -8,8 +8,8 @@ export const getAccessibleMenus = async (): Promise<MenuList[]> => {
         const response = await api.get<MenuList[]>("/menus/list");
         return response.data;
     } catch (error) {
-        console.log("메뉴 목록을 불러오지 못함");
-        throw error;
+        console.log("메뉴 목록을 불러오지 못함", error);
+        return [];
     }
 };
 
@@ -18,7 +18,7 @@ export const usePermissionStore = create<PermissionState>((set) => ({
     hasPermission: true,
     checkPermission: async (menuNo: number, permissionType: string, roleNo: number) => {
         try {
-            const response = await api.post("/permission-check", {
+            const response = await api.post("/menus/permission-check", {
                 menuNo: menuNo,
                 permissionType: permissionType,
                 roleNo: roleNo

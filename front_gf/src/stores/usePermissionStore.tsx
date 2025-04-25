@@ -4,21 +4,26 @@ import api from "../api/api";
 type PermissionState = {
     hasPermission: boolean | null;
     loading: boolean;
-    checkPermission: (menuNo: number, permissionType: string, roleNo: number) => void;
+    checkPermission: (menuNo: number, permissionType: string, roleNo: number, isAnonymous: boolean) => void;
 };
 
 export const usePermissionStore = create<PermissionState>((set) => ({
     hasPermission: null, // null로 초기화하여 아직 체크되지 않았음을 표시
     loading: false,      // 초기 상태는 로딩 중이 아님
-    checkPermission: async (menuNo, permissionType, roleNo) => {
+    checkPermission: async (menuNo, permissionType, roleNo, isAnonymous) => {
         set({ loading: true });
 
         try {
+            const headers = isAnonymous ? { isAnonymous: "true" } : {};
+
             const response = await api.post("/menus/permission-check", {
                 menuNo,
                 permissionType,
                 roleNo,
-            });
+                isAnonymous 
+            },
+                {headers}
+            );
 
             if (response.data.hasPermission) {
                 set({ hasPermission: true });

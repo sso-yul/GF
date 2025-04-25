@@ -3,10 +3,15 @@ package com.sol.gf.domain.menus;
 import com.sol.gf.domain.permission.MenuPermissionRequest;
 import com.sol.gf.domain.roles.RolesEntity;
 import com.sol.gf.domain.roles.RolesRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -25,9 +30,14 @@ public class MenusController {
     // 내비바에 뿌리는 용도
     @GetMapping("/list")
     public ResponseEntity<List<MenusDto>> getAccessibleMenus(Authentication authentication) {
-        List<String> userRoles = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList();
+        List<String> userRoles;
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            userRoles = Collections.singletonList("ROLE_VIEWER");
+        } else {
+            userRoles = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList();
+        }
 
         List<MenusEntity> menus = menusService.getAccessibleMenus(userRoles);
         List<MenusDto> menuDtos = convertToDTO(menus, userRoles);
@@ -46,21 +56,70 @@ public class MenusController {
     }
 
     // 조회, 작성 권한 확인용
+//    @PostMapping("/permission-check")
+//    public ResponseEntity<Map<String, Object>> checkPermission(@RequestBody MenuPermissionRequest request) {
+//        long roleNo = request.getRoleNo();
+//
+//        RolesEntity role;
+//        try {
+//            role = rolesRepository.findById(request.getRoleNo())
+//                    .orElseThrow(() -> new RuntimeException("역할을 찾을 수 없습니다: " + request.getRoleNo()));
+//        } catch (Exception e) {
+//            role = rolesRepository.findByRoleName("ROLE_VIEWER")
+//                    .orElseThrow(() -> new RuntimeException("ROLE_VIEWER 역할을 찾을 수 없습니다"));
+//            roleNo = role.getRoleNo();
+//        }
+//        boolean hasPermission = menusService.hasPermission(
+//                request.getMenuNo(),
+//                request.getPermissionType(),
+//                roleNo
+//        );
+//
+//        MenusEntity menu = menusService.findByMenuNo(request.getMenuNo());
+//        List<String> userRoles = Collections.singletonList(role.getRoleName());
+//        MenusDto menuDto = convertToDTO(Collections.singletonList(menu), userRoles).get(0);
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("hasPermission", hasPermission);
+//        response.put("menu", menuDto);
+//
+//        return ResponseEntity.ok(response);
+//    }
     @PostMapping("/permission-check")
-    public ResponseEntity<Map<String, Object>> checkPermission(@RequestBody MenuPermissionRequest request) {
+    public ResponseEntity<Map<String, Object>> checkPermission(
+            @RequestBody MenuPermissionRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        String roleName;
+        boolean isAnonymous = request.isAnonymous();
+
+        if (isAnonymous) {
+            roleName = "ROLE_VIEWER";
+        } else {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED)
+                        .body(Map.of("hasPermission", false, "message", "인증 정보 없음"));
+            }
+
+            roleName = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .findFirst()
+                    .orElse("ROLE_VIEWER"); // 인증은 되었지만 권한 없음 시 fallback
+        }
+
+        // 역할 이름 → roleNo
+        RolesEntity role = rolesRepository.findByRoleName(roleName)
+                .orElseThrow(() -> new RuntimeException("해당 역할을 찾을 수 없습니다: " + roleName));
+
         boolean hasPermission = menusService.hasPermission(
                 request.getMenuNo(),
                 request.getPermissionType(),
-                request.getRoleNo()
+                role.getRoleNo()
         );
 
         MenusEntity menu = menusService.findByMenuNo(request.getMenuNo());
-
-        RolesEntity role = rolesRepository.findById(request.getRoleNo())
-                .orElseThrow(() -> new RuntimeException("역할을 찾을 수 없습니다: " + request.getRoleNo()));
-
         List<String> userRoles = Collections.singletonList(role.getRoleName());
-
         MenusDto menuDto = convertToDTO(Collections.singletonList(menu), userRoles).get(0);
 
         Map<String, Object> response = new HashMap<>();
@@ -102,16 +161,6 @@ public class MenusController {
             case "Picture" -> "pic";
             case "Thread" -> "thread";
             default -> categoryName;
-        };
-    }
-
-    private long convertRoleNameToRoleNo(String roleName) {
-        return switch (roleName) {
-            case "ROLE_ADMIN" -> 1L;
-            case "ROLE_MANAGER" -> 2L;
-            case "ROLE_USER" -> 3L;
-            case "ROLE_VISITOR" -> 4L;
-            default -> 0L;
         };
     }
 }

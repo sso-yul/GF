@@ -200,7 +200,6 @@ const MenuCreateAndModify = ({}): JSX.Element => {
         };
     
         try {
-
             if(!menuUpdateRequest.menuName.trim()) {
                 alert("메뉴의 이름은 비워둘 수 없습니다.");
                 return;
@@ -305,6 +304,7 @@ const MenuCreateAndModify = ({}): JSX.Element => {
 
     const handleOrderMenu = (row: any, index?: number) => {};
 
+    // TODO::메뉴 삭제 기능 구현
     const handleDeleteMenu = async (deleteData: MenuCreateRequest) => {
         return null;
     }

@@ -4,6 +4,7 @@ import com.sol.gf.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,8 +27,10 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .anonymous(anonymous -> anonymous
+                        .authorities("ROLE_VIEWER"))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/**", "/api/user/register").permitAll()
+                        .requestMatchers("/", "/api/user/register", "/api/auth/**", "/api/menus/**").permitAll()
                         .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_ADMIN", "ROLE_USER", "ROLE_VISITOR")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/manager/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_ADMIN")

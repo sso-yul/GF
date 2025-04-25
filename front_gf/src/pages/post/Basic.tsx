@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import PermissionCheck from "../../components/global/permissionCheck";
+import PermissionCheck from "../../components/global/PermissionCheck";
 import { getMenuNoByMenuUrl } from "../../api/api.menu";
 
 function Basic() {
@@ -23,13 +23,13 @@ function Basic() {
     }, [customUrl]);
 
     return menuNo !== null ? (
-        <PermissionCheck menuNo={menuNo} permissionType="READ">
-            {customUrl ? (
-                <span>Basic 템플릿 - {customUrl} 메뉴</span>
-            ) : (
-                <span>Basic 템플릿 기본 화면</span>
-            )}
-        </PermissionCheck>
+            <PermissionCheck menuNo={menuNo} permissionType="READ">
+                {customUrl ? (
+                    <span>Basic 템플릿 - {customUrl} 메뉴</span>
+                ) : (
+                    <span>Basic 템플릿 기본 화면</span>
+                )}
+            </PermissionCheck>
     ) : (
         <div>Loading menu info...</div>
     );
