@@ -35,7 +35,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 requestURI.startsWith("/api/menus")
                         || requestURI.equals("/")
                         || requestURI.startsWith("/api/auth")
-                        || requestURI.equals("/api/sign/signin");
+                        || requestURI.startsWith("/api/sign")
+                        || requestURI.equals("/api/user/register");
 
         try {
             String jwt = getJwtFromRequest(request);

@@ -28,24 +28,23 @@ th {
     font-weight: 200;
 }
 
+// UserList.tsx 테이블
 .user-container {
-    width: 100%;
+    display: block;
+    width: 70%;
+    margin: 0 auto;
     height: 90%;
     overflow: auto;
     border: 1px solid orange;
 }
 
-// UserList.tsx 테이블
 .user-table {
-    width: 50%;
-    max-height: 100%;
-    overflow-y: auto;
-    justify-content: center;
-    border: 1px solid black;
+    display: flex;
 }
 
 .user-table table {
-    width: 50%;
+    width: 100%;
+    max-width: 100%;
 }
 
 .user-table tr, td {
