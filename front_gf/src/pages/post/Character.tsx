@@ -22,16 +22,16 @@ function Character() {
         fetchMenuNo();
     }, [customUrl]);
 
-    return menuNo !== null ? (
-        <PermissionCheck menuNo={menuNo} permissionType="READ">
-            {customUrl ? (
-                <span>Character 템플릿 - {customUrl} 메뉴</span>
-            ) : (
-                <span>Character 템플릿 기본 화면</span>
-            )}
-        </PermissionCheck>
-    ) : (
-        <div>Loading menu info...</div>
-    );
+    if (menuNo === null) {
+        return null;
+    }
+
+    return (
+        <>
+            <PermissionCheck menuNo={menuNo} permissionType="READ">
+                <span>{customUrl} 메뉴</span>
+            </PermissionCheck>
+        </>
+    )
 }
 export default Character;

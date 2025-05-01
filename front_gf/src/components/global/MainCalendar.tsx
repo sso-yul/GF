@@ -13,7 +13,7 @@ const events = [
     }
 ];
 
-export default function CalendarPage() {
+export default function MainCalendar() {
     return (
         <div style={{ height: "100vh", padding: "1rem" }}>
             <Calendar
