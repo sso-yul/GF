@@ -1,28 +1,14 @@
-import React, { ReactElement, isValidElement, cloneElement } from 'react';
+import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-// TR 요소의 예상 Props 타입 정의
-interface RowProps {
-    style?: React.CSSProperties;
-    children: React.ReactNode;
-    [key: string]: any; // 다른 가능한 props
-}
-
-// TD 요소의 예상 Props 타입 정의
-interface CellProps {
-    'data-column'?: string;
-    style?: React.CSSProperties;
-    [key: string]: any; // 다른 가능한 props
-}
-
 interface SortableRowProps {
     id: string | number;
-    children: ReactElement<RowProps>; // 구체적인 TR 타입으로 명시
+    children: React.ReactNode;
     handleColumn?: string;
 }
 
-const SortableRow = ({ id, children, handleColumn }: SortableRowProps): ReactElement | null => {
+const SortableRow = ({ id, children, handleColumn }: SortableRowProps) => {
     const {
         attributes,
         listeners,
@@ -36,25 +22,28 @@ const SortableRow = ({ id, children, handleColumn }: SortableRowProps): ReactEle
         transition
     };
 
-    // 내부의 td 요소들을 수정
-    const modifiedChildren = cloneElement(
-        children,
-        {
-            ref: setNodeRef,
-            style: { ...(children.props.style || {}), ...style },
-        },
-        React.Children.map(children.props.children, (child) => {
-            if (isValidElement<CellProps>(child) && child.props['data-column'] === handleColumn) {
-                return cloneElement(child, {
-                    ...child.props,
+    // children이 ReactElement인지 확인
+    if (!React.isValidElement(children)) {
+        return null;
+    }
+
+    // tr 내부의 td 요소들을 찾아서 handleColumn과 일치하는 열에만 드래그 핸들 기능 적용
+    const modifiedChildren = React.cloneElement(children, {
+        ref: setNodeRef,
+        style: {...(children.props.style || {}), ...style},
+        children: React.Children.map(children.props.children, (child) => {
+            // child가 유효한 요소이고 data-column 속성이 handleColumn과 일치하는 경우에만 listeners와 attributes 적용
+            if (React.isValidElement(child) && child.props['data-column'] === handleColumn) {
+                return React.cloneElement(child, {
                     ...listeners,
                     ...attributes,
-                    style: { cursor: 'grab', ...(child.props.style || {}) }
+                    style: { cursor: 'grab', ...child.props.style }
                 });
             }
             return child;
         })
-    );
+    });
+
     return modifiedChildren;
 };
 

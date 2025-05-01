@@ -1,38 +1,13 @@
-html {
-  height: 90%;
-}
-
 body {
   margin: 0;
   display: flex;
-  justify-content: center;
+  justify-content: center; /* 가로축 중앙 정렬 추가 */
   width: 100%;
   min-width: 320px;
   min-height: 100vh;
   -ms-overflow-style: none;
   border: 1px solid pink;
 }
-
 ::-webkit-scrollbar {
   display: none;
 }
-
-/* ::-webkit-scrollbar {
-  background-color: transparent;
-  width: 0.5rem;
-}
-
-::-webkit-scrollbar-thumb{
-  background-color:#babac0;
-  border-radius:16px;
-}
-
-::-webkit-scrollbar-thumb:hover{
-  background-color:#a0a0a5;
-}
-
-::-webkit-scrollbar-track:hover{
-  background-color:transparent;
-}
-
-::-webkit-scrollbar-button {display:none;} */
