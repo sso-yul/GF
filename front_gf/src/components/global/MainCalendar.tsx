@@ -15,7 +15,7 @@ const events = [
 
 export default function MainCalendar() {
     return (
-        <div style={{ height: "100vh", padding: "1rem" }}>
+        <div style={{ height: "50vh", padding: "1rem" }}>
             <Calendar
                 localizer={localizer}
                 events={events}
@@ -24,7 +24,11 @@ export default function MainCalendar() {
                 views={allViews}
                 defaultView="month"
                 defaultDate={new Date()}
-                style={{ height: "50%" }}
+                style={{ height: "100%" }}
+                onSelectEvent={(event) => {
+                    alert(`클릭된 이벤트: ${event.title}`);
+                    console.log("이벤트 객체:", event);
+                }}
             />
         </div>
     );
