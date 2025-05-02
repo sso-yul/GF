@@ -76,7 +76,7 @@ export default function UserList() {
     }
 
     return (
-        <>
+        <div className="user-list-container">
             <div className="user-list-header">
                 <p>사용자 목록</p>
                 <Button
@@ -88,7 +88,7 @@ export default function UserList() {
                     저장
                 </Button>
             </div>
-            <div className="user-container">
+            <div className="user-list-body">
                 <div className="user-table">
                     <Table
                         columns={["ID", "NAME", "ROLE", "삭제"]}
@@ -107,6 +107,6 @@ export default function UserList() {
                     />
                 </div>
             </div>
-        </>
+        </div>
     )
 }

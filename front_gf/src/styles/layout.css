@@ -27,14 +27,20 @@
 }
 
 .div-left {
-    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: flex-start;
 }
 
 main {
     width: 80%;
+    height: 100%
     flex: 1;
     border: 1px solid blue;
-    overflow-y: auto;
+    overflow: hidden;
+    position: relative;
 }
 
 header {

@@ -1,0 +1,25 @@
+.admin-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.admin-content {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-left {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 10px 0;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+}

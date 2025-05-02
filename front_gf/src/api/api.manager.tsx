@@ -23,7 +23,7 @@ export const updateUserRoles = async (updates: { userId: string; roleNo: number 
 
 export const createMenu = async (menuData: MenuCreateRequest): Promise<any> => {
     try {
-        await api.post("/manager/menus/create", menuData);
+        await api.post("/admin/menus/create", menuData);
     } catch (error) {
         console.error("메뉴 생성 실패");
         throw error;

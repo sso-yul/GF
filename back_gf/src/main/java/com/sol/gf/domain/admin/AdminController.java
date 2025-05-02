@@ -33,7 +33,7 @@ public class AdminController {
     }
 
     // 메뉴 생성
-    @PostMapping("/manager/menus/create")
+    @PostMapping("/admin/menus/create")
     public ResponseEntity<?> createMenus(@RequestBody MenuCreateRequest menuCreateRequest) {
         try {
             MenuCreateRequest createMenus = menusService.createMenu(menuCreateRequest);

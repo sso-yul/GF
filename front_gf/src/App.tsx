@@ -7,6 +7,8 @@ import ProtectAdminRoute from "./stores/ProtectAdminRoute";
 
 import Layout from "./components/Layout";
 
+import MainCalendar from "./components/global/MainCalendar";
+
 import Signin from "./pages/sign/Signin";
 import Signup from "./pages/sign/Signup";
 
@@ -54,10 +56,15 @@ const router = createBrowserRouter([
         element: ( <Layout /> ),
         children: [
             
+            {
+                path: "",
+                element: <MainCalendar />
+            },
             // 관리자
             {
                 element: <ProtectAdminRoute />,
                 children: [
+
                     {
                         path: "/admin",
                         element: <Admin />,

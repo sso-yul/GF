@@ -3,6 +3,7 @@ import "../../styles/navigator.css"
 import { useLocation, useNavigate } from "react-router-dom"
 import { MenuList } from "../../stores/types";
 import { getAccessibleMenus } from "../../api/api.menu";
+import useAuthStore from "../../stores/useAuthStore";
 
 const Navigator = (): JSX.Element => {
 
@@ -10,6 +11,7 @@ const Navigator = (): JSX.Element => {
     const location = useLocation();
     const [menus, setMenus] = useState<MenuList[]>([]);
 
+    const userId = useAuthStore(state => state.user?.userId);
 
     // 메뉴 클릭 핸들러
     const handleMenuClick = (menu: MenuList): void => {
@@ -36,7 +38,7 @@ const Navigator = (): JSX.Element => {
             }
         }
         fetchMenuData();
-    }, []);
+    }, [userId]);
     
     return (
         <>
