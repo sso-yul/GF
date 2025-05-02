@@ -85,7 +85,7 @@ const router = createBrowserRouter([
 
             // 내 페이지
             { path: "/mypage", element: <Mypage /> },
-            { path: "/mypage/noti", element: <Notification /> },
+            { path: "/noti", element: <Notification /> },
 
             // 여기 url {userName}으로 해서 주소창으로도 검색 가능하게...
             { path: "/post/userName", element: <Mypost /> },
@@ -98,7 +98,7 @@ const router = createBrowserRouter([
                     { path: ":customUrl", element: <Basic /> }
                 ]
             },
-            {   // 2. 캐릭터 상세
+            {   // 2. 상세
                 path: "/char",
                 children: [
                     { path: "", element: <Character /> },
@@ -119,7 +119,7 @@ const router = createBrowserRouter([
                     { path: ":customUrl", element: <Picture /> }
                 ]
             },
-            {   // 5. 썰 타래 형식
+            {   // 5. 타래 형식
                 path: "/thread",
                 children: [
                     { path: "", element: <Thread /> },

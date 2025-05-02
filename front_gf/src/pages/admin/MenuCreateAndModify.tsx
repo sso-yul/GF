@@ -348,7 +348,7 @@ const MenuCreateAndModify = ({}): JSX.Element => {
 
     return (
         <div className="menu-container">
-            {/* 메뉴 생성 섹션 - 관리자만 가능 */}
+            {/* 메뉴 생성 - 관리자만 가능 */}
             {isLoggedIn && hasAdminAccess && (
                 <div className="section-container">
                     <p className="section-title">메뉴 생성</p>

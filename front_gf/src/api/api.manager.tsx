@@ -28,7 +28,7 @@ export const createMenu = async (menuData: MenuCreateRequest): Promise<any> => {
         console.error("메뉴 생성 실패");
         throw error;
     }
-}
+};
 
 export const updateMenu = async (menuUpdateData: MenuUpdateRequest): Promise<any> => {
     try {
@@ -37,7 +37,7 @@ export const updateMenu = async (menuUpdateData: MenuUpdateRequest): Promise<any
         console.error("메뉴 수정 실패");
         throw error;
     }
-}
+};
 
 export const getMenuList = async (): Promise<MenuList[]> => {
     try {
@@ -47,7 +47,7 @@ export const getMenuList = async (): Promise<MenuList[]> => {
         console.error("메뉴 목록을 불러오지 못함 ", error);
         throw error;
     }
-}
+};
 
 export const updateMenuOrder = (orderList: { menuNo: number; menuOrder: number }[]) => {
     return api.put("/manager/menus/order", orderList);
