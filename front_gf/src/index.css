@@ -11,6 +11,7 @@ body {
   min-height: 100vh;
   -ms-overflow-style: none;
   border: 1px solid pink;
+  height: 100%;
 }
 
 ::-webkit-scrollbar {

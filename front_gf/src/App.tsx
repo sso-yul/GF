@@ -82,7 +82,7 @@ const router = createBrowserRouter([
                     }
                 ]
             },
-
+            
             // 내 페이지
             { path: "/mypage", element: <Mypage /> },
             { path: "/noti", element: <Notification /> },
