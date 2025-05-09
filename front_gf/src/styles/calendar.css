@@ -1,0 +1,57 @@
+.rbc-event-content {
+    font-size: 0.725rem;
+    font-weight: bold;
+}
+
+.monthPrevNext {
+    display: flex;
+    gap: 0.725rem;
+}
+
+.monthPrevNext button {
+    border: none;
+    background-color: transparent;
+    outline: none;
+    color: inherit;
+}
+
+.monthPrevNext button:hover,
+.monthPrevNext button:focus,
+.monthPrevNext button:active {
+    border: none;
+    background-color: transparent;
+    outline: none;
+    color: inherit;
+}
+
+.monthWeekDay {
+    display: flex;
+    gap: 0.3rem;
+    marginLeft: auto; 
+}
+
+.monthWeekDay button {
+    z-index: 1;
+    background-color: transparent;
+    border: none;
+    color: black;
+}
+
+.monthWeekDay button:hover,
+.monthWeekDay button:focus,
+.monthWeekDay button:active {
+    border: none;
+    background-color: transparent;
+    outline: none;
+    color: black;
+}
+
+.rbc-event.rbc-event-allday {
+    width:99%;
+    margin: 0 auto;
+}
+
+.rbc-date-cell {
+    display: flex;
+    justify-content: center;
+}
