@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CalendarEvent } from "../components/global/MainCalendar";
+import { CalendarEvent } from "../components/calendar/MainCalendar";
 
 // 날짜 포맷 변환 (YYYYMMDD -> Date)
 const formatDateType = (dateNum: number): Date => {

@@ -7,7 +7,7 @@ import ProtectAdminRoute from "./stores/ProtectAdminRoute";
 
 import Layout from "./components/Layout";
 
-import MainCalendar from "./components/global/MainCalendar";
+import MainCalendar from "./components/calendar/MainCalendar";
 
 import Signin from "./pages/sign/Signin";
 import Signup from "./pages/sign/Signup";
