@@ -1,49 +1,57 @@
+.rbc-toolbar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1.5rem;
+    height: 1.5rem;
+}
+
 .rbc-event-content {
     font-size: 0.725rem;
     font-weight: bold;
 }
 
-.monthPrevNext {
+.prev-next {
     display: flex;
     gap: 0.725rem;
 }
 
-.monthPrevNext button {
+.prev-next button {
     border: none;
     background-color: transparent;
     outline: none;
     color: inherit;
 }
 
-.monthPrevNext button:hover,
-.monthPrevNext button:focus,
-.monthPrevNext button:active {
+.prev-next button:hover,
+.prev-next button:focus,
+.prev-next button:active {
     border: none;
     background-color: transparent;
     outline: none;
     color: inherit;
 }
 
-.monthWeekDay {
+.month-week-day {
     display: flex;
     gap: 0.3rem;
     marginLeft: auto; 
 }
 
-.monthWeekDay button {
+.month-week-day button {
     z-index: 1;
     background-color: transparent;
     border: none;
-    color: black;
 }
 
-.monthWeekDay button:hover,
-.monthWeekDay button:focus,
-.monthWeekDay button:active {
+.month-week-day button:hover,
+.month-week-day button:focus,
+.month-week-day button:active {
     border: none;
     background-color: transparent;
     outline: none;
-    color: black;
 }
 
 .rbc-event.rbc-event-allday {
