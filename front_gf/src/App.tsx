@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { getCookie, refreshToken } from "./api/api.cookie";
 import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 import ProtectAdminRoute from "./stores/ProtectAdminRoute";
 
@@ -28,6 +29,8 @@ import Picture from "./pages/post/Picture";
 import Thread from "./pages/post/Thread";
 import Chatter from "./pages/post/Chatter";
 import NoAccess from "./components/global/NoAccess";
+
+import ColorPicker from "./components/global/ColorPicker";
 
 const AuthCheck = ({ children }: { children: React.ReactNode }) => {
         useEffect(() => {
@@ -82,6 +85,8 @@ const router = createBrowserRouter([
                     }
                 ]
             },
+
+            {path: "ex", element: <ColorPicker />},
             
             // 내 페이지
             { path: "/mypage", element: <Mypage /> },

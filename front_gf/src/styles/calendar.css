@@ -37,7 +37,7 @@
 .month-week-day {
     display: flex;
     gap: 0.3rem;
-    marginLeft: auto; 
+    margin-left: auto; 
 }
 
 .month-week-day button {

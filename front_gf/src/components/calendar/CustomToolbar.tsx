@@ -1,6 +1,6 @@
 import { JSX } from "react";
 import { ToolbarProps, Views, View } from "react-big-calendar";
-import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import { faAngleLeft, faAngleRight, faCalendarPlus } from "@fortawesome/free-solid-svg-icons";
 import IconButton from "../button/IconButton";
 import Button from "../button/Button";
 import { CalendarEvent } from "./MainCalendar";
@@ -19,22 +19,25 @@ const CustomToolbar = (
     };
 
     return (
-        <div className="rbc-toolbar">
-            <div className="prev-next">
-                <IconButton icon={faAngleLeft} onClick={goToBack} />
-                <div style={{ fontWeight: "bold", fontSize: "1rem", width: "9vh", justifyContent: "center" }}>
-                    {props.label}
+        <>
+            <div className="rbc-toolbar">
+                <div className="prev-next">
+                    <IconButton icon={faAngleLeft} onClick={goToBack} />
+                    <div style={{ fontWeight: "bold", fontSize: "1rem", width: "9vh", justifyContent: "center" }}>
+                        {props.label}
+                    </div>
+                    <IconButton icon={faAngleRight} onClick={goToNext} />
+                    <Button iconPosition="right" onClick={goToToday}>TODAY</Button>
                 </div>
-                <IconButton icon={faAngleRight} onClick={goToNext} />
-                <Button iconPosition="right" onClick={goToToday}>TODAY</Button>
-            </div>
 
-            <div className="month-week-day">
-                <Button iconPosition="right" onClick={() => handleViewChange(Views.MONTH)}>월</Button>
-                <Button iconPosition="right" onClick={() => handleViewChange(Views.WEEK)}>주</Button>
-                <Button iconPosition="right" onClick={() => handleViewChange(Views.DAY)}>일</Button>
+                <div className="month-week-day">
+                    <Button iconPosition="right" onClick={() => handleViewChange(Views.MONTH)}>월</Button>
+                    <Button iconPosition="right" onClick={() => handleViewChange(Views.WEEK)}>주</Button>
+                    <Button iconPosition="right" onClick={() => handleViewChange(Views.DAY)}>일</Button>
+                    <IconButton icon={faCalendarPlus} />
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 
