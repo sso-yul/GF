@@ -15,7 +15,8 @@ import { ko } from "date-fns/locale/ko";
 import IconButton from "../button/IconButton";
 import CustomToolbar from "./CustomToolbar";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
-
+import Modal from "../global/Modal";
+import Schedule from "./Schedule";
 // 이벤트 타입
 export interface CalendarEvent {
     id: number;
@@ -53,12 +54,24 @@ const DnDCalendar = withDragAndDrop<CalendarEvent, object>(Calendar);
 // View 타입 정의
 type CustomView = "month" | "week" | "day" | "agenda";
 
+
+const colorOptions = {
+
+}
+
+
 export default function MainCalendar() {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [view, setView] = useState<CustomView>("month");
     const [date, setDate] = useState<Date>(new Date());
     const { holidays, fetchHolidaysByYear } = useFetchHolidays();
     const { isAdmin } = useAdminCheck();
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | undefined>(undefined);
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+    const [selectedDateRange, setSelectedDateRange] = useState<{start: Date; end: Date} | undefined>(undefined);
+
 
     // 현재 연도의 공휴일 가져오기
     useEffect(() => {
@@ -139,6 +152,36 @@ export default function MainCalendar() {
         };
         setEvents(updated);
     };
+
+
+        const handleSaveEvent = (eventData: Omit<CalendarEvent, "id">) => {
+        if (selectedEvent) {
+            // 기존 이벤트 수정
+            const updatedEvents = events.map(event => 
+                event.id === selectedEvent.id 
+                    ? { ...event, ...eventData, id: selectedEvent.id } 
+                    : event
+            );
+            setEvents(updatedEvents);
+        } else {
+            // 새 이벤트 추가
+            const newEvent: CalendarEvent = {
+                ...eventData,
+                id: events.length + 1,
+                type: "USER",
+                editable: true
+            };
+            setEvents([...events, newEvent]);
+        }
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedEvent(undefined);
+        setSelectedDate(undefined);
+        setSelectedDateRange(undefined);
+    };
+
 
     const handleResizeEvent = ({ event, start, end }: EventDropResizeArgs) => {
         const idx = events.findIndex((e) => e.id === event.id);
@@ -236,17 +279,6 @@ export default function MainCalendar() {
                     return {};
                 }}
                 messages={{
-                    // allDay: "종일",
-                    // previous: <span><FontAwesomeIcon icon={faAngleLeft} /></span>,
-                    // next: <span><FontAwesomeIcon icon={faAngleRight} /></span>,
-                    // today: "오늘",
-                    // month: "월",
-                    // week: "주",
-                    // day: "일",
-                    // agenda: "일정",
-                    // date: "날짜",
-                    // time: "시간",
-                    // event: "이벤트",
                     showMore: (total) => `+${total} 더보기`,
                 }}
                 formats={{

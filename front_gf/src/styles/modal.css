@@ -1,82 +1,45 @@
-/* Modal Overlay */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: none;  /* 기본값은 display: none */
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    transition: opacity 0.3s ease;
 }
 
-/* Open 상태일 때만 표시 */
-.modal-overlay.open {
-    display: flex;
-    opacity: 1;
-}
-
-/* Modal Content */
 .modal-content {
     background-color: #fff;
-    border-radius: 16px;
-    width: 100%;
-    max-width: 600px;
-    max-height: 85vh;
-    overflow-y: auto;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-    opacity: 0;
-    transform: scale(0.9);
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    padding: 24px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    position: relative;
 }
 
-/* Modal Open Animation */
-.modal-overlay.open .modal-content {
-    transform: scale(1);
-    opacity: 1;
-}
-
-/* Modal Header */
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    background-color: #f8f8f8;
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
-    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 12px;
 }
 
-/* Modal Title */
 .modal-title {
     margin: 0;
-    font-size: 1.6rem;
-    font-weight: 600;
-    color: #333;
+    font-size: 1.25rem;
 }
 
-/* Modal Close Button */
 .modal-close {
     background: none;
     border: none;
-    font-size: 2rem;
-    color: #888;
+    font-size: 1.5rem;
     cursor: pointer;
-    transition: color 0.3s ease;
 }
 
-.modal-close:hover {
-    color: #e60000; /* 빨간색으로 변화 */
-}
-
-/* Modal Body */
 .modal-body {
-    padding: 25px;
-    color: #555;
-    font-size: 1rem;
-    line-height: 1.6;
+    padding-top: 8px;
 }

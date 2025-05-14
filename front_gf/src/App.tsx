@@ -30,8 +30,6 @@ import Thread from "./pages/post/Thread";
 import Chatter from "./pages/post/Chatter";
 import NoAccess from "./components/global/NoAccess";
 
-import ColorPicker from "./components/global/ColorPicker";
-
 const AuthCheck = ({ children }: { children: React.ReactNode }) => {
         useEffect(() => {
             const checkAndRefreshToken = async () => {
@@ -85,8 +83,6 @@ const router = createBrowserRouter([
                     }
                 ]
             },
-
-            {path: "ex", element: <ColorPicker />},
             
             // 내 페이지
             { path: "/mypage", element: <Mypage /> },

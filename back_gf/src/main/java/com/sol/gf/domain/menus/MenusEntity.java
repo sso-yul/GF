@@ -24,17 +24,17 @@ public class MenusEntity {
     @Column(name = "menu_no")
     private long menuNo;
 
-    @Column(name = "menu_order")
+    @Column(name = "menu_order", nullable = false)
     private long menuOrder;
 
-    @Column(name = "menu_name")
+    @Column(name = "menu_name", nullable = false)
     private String menuName;
 
-    @Column(name = "menu_url")
+    @Column(name = "menu_url", nullable = false)
     private String menuUrl;
 
     @ManyToOne
-    @JoinColumn(name = "menu_category_no", referencedColumnName = "category_no")
+    @JoinColumn(name = "menu_category_no", referencedColumnName = "category_no", nullable = false)
     private CategoryEntity menuCategoryNo;
 
     @ManyToMany

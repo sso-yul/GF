@@ -85,7 +85,7 @@ public class JwtUtil {
                     .getPayload()
                     .get("roleName", String.class);
         } catch (JwtException e) {
-            log.error("JWT에서 roles 추출 오류", e);
+            log.error("JWT에서 역할 추출 오류", e);
             return null;
         }
     }
