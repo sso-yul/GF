@@ -30,9 +30,9 @@ public class SecurityConfig {
                 .anonymous(anonymous -> anonymous
                         .authorities("ROLE_VIEWER"))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/api/user/register", "/api/auth/**", "/api/menus/**", "/api/sign/**").permitAll()
+                        .requestMatchers("/", "/api/user/register", "/api/auth/**", "/api/menus/**", "/api/sign/**", "/api/schedule/**").permitAll()
                         .requestMatchers("/api/user/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_ADMIN", "ROLE_USER", "ROLE_VISITOR")
-                        .requestMatchers("/api/admin/**", "/api/schedule/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/manager/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )

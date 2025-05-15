@@ -21,8 +21,8 @@ public class ScheduleDto {
     private ScheduleType scheduleType;
     private boolean scheduleEditable;
 
-    private Long userNo;
     private Long scheduleColor;
+    private String scheduleColorName;
 
     public enum ScheduleType {
         HOLIDAY,

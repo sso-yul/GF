@@ -131,3 +131,27 @@ export interface PermissionState {
     hasPermission: boolean;
     checkPermission: (menuNo: number, permissionType: string, roleNo: number) => Promise<void>;
 }
+
+export interface ScheduleColorDto {
+    scheduleColorNo?: number;
+    scheduleColorName: string;
+    scheduleColor: string;
+}
+
+export interface ScheduleDto {
+    scheduleNo?: number;
+    scheduleTitle: string;
+    scheduleContent: string;
+    scheduleStart: Date;
+    scheduleEnd: Date;
+    scheduleAllDay: boolean;
+    scheduleType: ScheduleType;
+    scheduleEditable: boolean;
+    scheduleColor?: number;
+    scheduleColorName?: string;
+}
+
+export enum ScheduleType {
+    HOLIDAY = "HOLIDAY",
+    USER = "USER"
+}

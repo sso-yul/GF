@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { CalendarEvent } from "../components/calendar/MainCalendar";
 
-// 날짜 포맷 변환 (YYYYMMDD -> Date)
 const formatDateType = (dateNum: number): Date => {
     const year = Math.floor(dateNum / 10000);
     const month = Math.floor((dateNum % 10000) / 100) - 1; // 0-11 월 표현
@@ -9,11 +8,10 @@ const formatDateType = (dateNum: number): Date => {
     return new Date(year, month, day);
 };
 
-// 공휴일 API 타입
 interface THoliday {
     dateName: string;
-    locdate: number; // YYYYMMDD 형식의 숫자
-    isHoliday: string; // "Y" | "N"
+    locdate: number;
+    isHoliday: string;
 }
 
 const BASE_URL = "https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo";
@@ -33,12 +31,12 @@ export function useFetchHolidays() {
             const formatHolidays: CalendarEvent[] = (_holidays as THoliday[]).map((item, index) => {
                 const date = formatDateType(item.locdate);
                 return { 
-                    id: 10000 + index, // 기존 ID와 충돌 방지
+                    id: 10000 + index,
                     title: item.dateName, 
                     start: date, 
                     end: date, 
                     type: "HOLIDAY", 
-                    editable: false, // 공휴일은 편집 불가능
+                    editable: false,
                     allDay: true 
                 };
             });

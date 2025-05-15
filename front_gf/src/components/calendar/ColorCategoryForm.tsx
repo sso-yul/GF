@@ -34,11 +34,7 @@ export default function ColorCategoryForm({ onSave }: Props) {
         }
 
         try {
-            const scheduleColorDto = {
-                scheduleColorName: name.trim(),
-                scheduleColor: color
-            };
-            await saveScheduleColor(scheduleColorDto);
+            await saveScheduleColor(name, color);
             onSave();
             alert("저장에 성공했습니다.");
         } catch (error) {

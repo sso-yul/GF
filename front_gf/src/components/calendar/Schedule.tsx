@@ -1,13 +1,8 @@
 import { useState, useEffect } from "react";
 import { CalendarEvent } from "./MainCalendar";
 import "../../styles/schedule.css";
-
-// ColorOption 인터페이스 추가
-interface ColorOption {
-  schedule_color_no: number;
-  schedule_color_name: string;
-  schedule_color: string;
-}
+import { ScheduleColorDto, ScheduleDto, ScheduleType } from "../../stores/types";
+import { getScheduleColor, saveSchedule, modifySchedule } from "../../api/api.calendar";
 
 interface ScheduleProps {
     selectedDate?: Date;
@@ -15,7 +10,9 @@ interface ScheduleProps {
     event?: CalendarEvent;
     onSave: (event: Omit<CalendarEvent, "id">) => void;
     onClose: () => void;
-    colors: ColorOption[]; // ColorOption 타입으로 명시
+    readOnly?: boolean;
+    isAdmin?: boolean;
+    allDay: boolean;
 }
 
 export default function Schedule({
@@ -24,48 +21,72 @@ export default function Schedule({
     event,
     onSave,
     onClose,
-    colors = []
+    readOnly = false,
+    isAdmin = false,
+    allDay: propAllDay,
 }: ScheduleProps) {
+    const isReadOnly = readOnly || !isAdmin;
+
     const [title, setTitle] = useState(event?.title || "");
     const [content, setContent] = useState("");
-    const [startDate, setStartDate] = useState<Date>(selectedDate || dateRange?.start || new Date());
-    const [endDate, setEndDate] = useState<Date>(selectedDate || dateRange?.end || new Date());
-    const [allDay, setAllDay] = useState(event?.allDay || dateRange ? true : false);
+    const [startDate, setStartDate] = useState<Date>(
+        dateRange?.start || selectedDate || new Date()
+    );
+    const [endDate, setEndDate] = useState<Date>(
+        dateRange?.end || selectedDate || new Date()
+    );
+    const [allDay, setAllDay] = useState<boolean>(
+        propAllDay ?? event?.allDay ??
+        (dateRange
+            ? (dateRange.start.getHours() === 0 && dateRange.end.getHours() === 23
+                ? true
+                : false)
+            : false)
+    );
     const [selectedColor, setSelectedColor] = useState<number | null>(null);
+    const [selectedColorName, setSelectedColorName] = useState<string | undefined>(undefined);
 
-    function hexToRgba(hex: string, alpha: number): string {
-        const sanitized = hex.replace("#", "");
-        if (sanitized.length !== 6) return `rgba(0,0,0,${alpha})`;
-
-        const r = parseInt(sanitized.slice(0, 2), 16);
-        const g = parseInt(sanitized.slice(2, 4), 16);
-        const b = parseInt(sanitized.slice(4, 6), 16);
-        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-    }
-
-    // 색상에 투명도를 적용하는 함수 추가
-    function getColorWithOpacity(color: string, alpha: number = 0.1): string {
-        if (color.startsWith('#')) {
-            return hexToRgba(color, alpha);
-        } else if (color.startsWith('rgb(')) {
-            return color.replace(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/, `rgba($1, $2, $3, ${alpha})`);
-        } else if (color.startsWith('rgba(')) {
-            return color.replace(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*[\d.]+\)/, `rgba($1, $2, $3, ${alpha})`);
-        }
-        return color;
-    }
+    const [colorOptions, setColorOptions] = useState<ScheduleColorDto[]>([]);
+    
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (event) {
             setTitle(event.title);
             setStartDate(event.start);
             setEndDate(event.end);
-            setAllDay(event.allDay || false);
-            if (event.resource?.schedule_color) {
+            setAllDay(event.allDay ?? false);
+            setContent(event.resource?.schedule_content || ""); 
+            if (event?.resource?.schedule_color) {
                 setSelectedColor(event.resource.schedule_color);
             }
+            if (event?.resource?.schedule_color_name) {
+                setSelectedColorName(event.resource.schedule_color_name);
+            }
+
         }
     }, [event]);
+
+    useEffect(() => {
+        if (endDate < startDate) {
+            setError("종료일은 시작일보다 빠를 수 없습니다.");
+        } else {
+            setError(null);
+        }
+    }, [startDate, endDate]);
+
+    useEffect(() => {
+        const loadColors = async () => {
+            try {
+                const colors = await getScheduleColor();
+                setColorOptions(colors);
+            } catch (error) {
+                console.error("색상 옵션을 불러오는 데 실패했습니다.");
+            }
+        };
+
+        loadColors();
+    }, []);
 
     const formatDateForInput = (date: Date) => {
         const year = date.getFullYear();
@@ -83,28 +104,61 @@ export default function Schedule({
     const startFormatted = formatDateForInput(startDate);
     const endFormatted = formatDateForInput(endDate);
 
-    const handleSave = () => {
-        const newEvent: Omit<CalendarEvent, "id"> = {
-            title,
-            start: new Date(startDate),
-            end: new Date(endDate),
-            allDay,
-            type: "USER",
-            editable: true,
-            resource: {
-                schedule_content: content,
-                schedule_color: selectedColor
+    const handleSave = async () => {
+        if (isReadOnly || error) return;
+
+        try {
+            const newEvent: Omit<CalendarEvent, "id"> = {
+                title,
+                start: new Date(startDate),
+                end: new Date(endDate),
+                allDay,
+                type: "USER",
+                editable: true,
+                resource: {
+                    schedule_content: content,
+                    schedule_color: selectedColor,
+                    schedule_color_name: selectedColorName
+                }
+            };
+
+            // ScheduleDto 형식으로 변환
+            const scheduleData: ScheduleDto = {
+                scheduleTitle: title,
+                scheduleContent: content,
+                scheduleStart: startDate,
+                scheduleEnd: endDate,
+                scheduleAllDay: allDay,
+                scheduleType: ScheduleType.USER,
+                scheduleEditable: true,
+                scheduleColor: selectedColor || undefined,
+                scheduleColorName: selectedColorName
+            };
+
+            
+            if (event?.id) {
+                // 수정 API 호출
+                const updatedSchedule = await modifySchedule(event.id, scheduleData);
+            } else {
+                // 저장 API 호출
+                const savedSchedule = await saveSchedule(scheduleData);
             }
-        };
-        onSave(newEvent);
-        onClose();
-    }
+            console.log("===", newEvent);
+            onSave(newEvent);
+            onClose();
+        } catch (error) {
+            console.error("일정 저장 실패:", error);
+            setError("일정 저장에 실패했습니다.");
+        }
+    };
 
     const handleAllDayChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (isReadOnly) return;
+
         setAllDay(event.target.checked);
         if (event.target.checked) {
             const newStartDate = new Date(startDate);
-            newStartDate.setHours(0, 0, 0, 0)
+            newStartDate.setHours(0, 0, 0, 0);
 
             const newEndDate = new Date(endDate);
             newEndDate.setHours(23, 59, 59, 999);
@@ -114,134 +168,186 @@ export default function Schedule({
         }
     };
 
-    return(
-        <>
-            <div className="schedule-content">
+    return (
+        <div className="schedule-content">
+            <div className="schedule-item">
+                <label htmlFor="title" />
+                <input
+                    type="text"
+                    id="title"
+                    value={title}
+                    onChange={(event) => !isReadOnly && setTitle(event.target.value)}
+                    placeholder="일정"
+                    className="schedule-input"
+                    readOnly={isReadOnly}
+                />
+            </div>
+
+            <div className="schedule-checkbox">
+                <input
+                    type="checkbox"
+                    id="allDay"
+                    onChange={handleAllDayChange}
+                    className="checkbox-input"
+                    disabled={isReadOnly}
+                    checked={allDay}
+                />
+                <label className="checkbox-label" htmlFor="allDay">
+                    종일
+                </label>
+            </div>
+
+            <div className="schedule-row">
                 <div className="schedule-item">
-                    <label htmlFor="title" />
+                    <label htmlFor="startDate">시작일</label>
                     <input
-                        type="text"
-                        id="title"
-                        value={title}
-                        onChange={(event) => setTitle(event.target.value)}
-                        placeholder="일정"
+                        type="date"
+                        id="startDate"
+                        value={startFormatted.date}
+                        onChange={(event) => {
+                            if (isReadOnly) return;
+                            const [year, month, day] = event.target.value.split('-').map(Number);
+                            const newDate = new Date(startDate);
+                            newDate.setFullYear(year, month - 1, day);
+                            setStartDate(newDate);
+                        }}
                         className="schedule-input"
+                        disabled={isReadOnly}
                     />
-                </div>
-
-                <div className="schedule-checkbox">
-                    <input
-                        type="checkbox"
-                        id="allDay"
-                        checked={allDay}
-                        onChange={handleAllDayChange}
-                        className="checkbox-input"
-                    />
-                    <label className="checkbox-label" htmlFor="allDay">
-                        종일
-                    </label>
-                </div>
-
-                <div className="schedule-row">
-                    <div className="schedule-item">
-                        <label htmlFor="startDate">시작일</label>
+                    {!allDay && (
                         <input
-                            type="date"
-                            id="startDate"
-                            value={startFormatted.date}
+                            type="time"
+                            id="startTime"
+                            value={startFormatted.time}
                             onChange={(event) => {
-                                const [year, month, day] = event.target.value.split('-').map(Number);
+                                if (isReadOnly) return;
+                                const [hours, minutes] = event.target.value.split(':').map(Number);
                                 const newDate = new Date(startDate);
-                                newDate.setFullYear(year, month - 1, day);
+                                newDate.setHours(hours, minutes);
                                 setStartDate(newDate);
                             }}
-                            className="schedule-input"
+                            className="schedule-input time-input"
+                            disabled={isReadOnly}
                         />
-                        {!allDay && (
-                            <input
-                                type="time"
-                                id="startTime"
-                                value={startFormatted.time}
-                                onChange={(event) => {
-                                    const [hours, minutes] = event.target.value.split(':').map(Number);
-                                    const newDate = new Date(startDate);
-                                    newDate.setHours(hours, minutes);
-                                    setStartDate(newDate);
-                                }}
-                                className="schedule-input time-input"
-                            />
-                        )}
-                    </div>
-
-                    <div className="schedule-item">
-                        <label htmlFor="endDate">종료일</label>
-                        <input
-                            type="date"
-                            id="endDate"
-                            value={endFormatted.date}
-                            onChange={(event) => {
-                                const [year, month, day] = event.target.value.split('-').map(Number);
-                                const newDate = new Date(endDate);
-                                newDate.setFullYear(year, month - 1, day);
-                                setEndDate(newDate);
-                            }}
-                            className="schedule-input"
-                        />
-                        {!allDay && (
-                            <input
-                                type="time"
-                                id="endTime"
-                                value={endFormatted.time}
-                                onChange={(event) => {
-                                    const [hours, minutes] = event.target.value.split(':').map(Number);
-                                    const newDate = new Date(endDate);
-                                    newDate.setHours(hours, minutes);
-                                    setEndDate(newDate);
-                                }}
-                                className="schedule-input time-input"
-                            />
-                        )}
-                    </div>
-
-                    <div className="schedule-item">
-                        <label htmlFor="content" />
-                        <textarea
-                            id="content"
-                            value={content}
-                            onChange={(event) => setContent(event.target.value)}
-                            placeholder="내용을 입력하세요"
-                            className="schedule-textarea"
-                            rows={4}
-                        />
-                    </div>
-
-                    {colors.length > 0 && (
-                        <div className="schedule-item">
-                            <label>일정 분류</label>
-                            {colors.map((color) => (
-                                <div
-                                    key={color.schedule_color_no}
-                                    className={`color-option ${selectedColor === color.schedule_color_no ? 'selected' : ''}`}
-                                    style={{ 
-                                        color: color.schedule_color,
-                                        backgroundColor: getColorWithOpacity(color.schedule_color, 0.1) // 10% 투명도
-                                    }}
-                                    onClick={() => setSelectedColor(color.schedule_color_no)}
-                                    title={color.schedule_color_name}
-                                ></div>
-                            ))}
-                        </div>
                     )}
-                    <div className="button-row">
-                        <button className="button1" onClick={handleSave} disabled={!title}>저장</button>
-                    </div>
-
-
-
-
                 </div>
 
+                <div className="schedule-item">
+                    <label htmlFor="endDate">종료일</label>
+                    <input
+                        type="date"
+                        id="endDate"
+                        value={endFormatted.date}
+                        onChange={(event) => {
+                            if (isReadOnly) return;
+                            const [year, month, day] = event.target.value.split('-').map(Number);
+                            const newDate = new Date(endDate);
+                            newDate.setFullYear(year, month - 1, day);
+                            setEndDate(newDate);
+                        }}
+                        className="schedule-input"
+                        disabled={isReadOnly}
+                    />
+                    {!allDay && (
+                        <input
+                            type="time"
+                            id="endTime"
+                            value={endFormatted.time}
+                            onChange={(event) => {
+                                if (isReadOnly) return;
+                                const [hours, minutes] = event.target.value.split(':').map(Number);
+                                const newDate = new Date(endDate);
+                                newDate.setHours(hours, minutes);
+                                setEndDate(newDate);
+                            }}
+                            className="schedule-input time-input"
+                            disabled={isReadOnly}
+                        />
+                    )}
+                </div>
             </div>
-        </>
-    )
+
+            <div className="schedul-row">
+                {error && <p className="error-message">{error}</p>}
+            </div>
+
+            <div className="schedule-row">
+                <div className="schedule-item">
+                    <label htmlFor="content" />
+                    <textarea
+                        id="content"
+                        value={content}
+                        onChange={(event) => !isReadOnly && setContent(event.target.value)}
+                        placeholder="내용을 입력하세요"
+                        className="schedule-textarea"
+                        rows={4}
+                        readOnly={isReadOnly}
+                    />
+                </div>
+            </div>
+
+
+            <div className="schedule-row">
+                <div className="schedule-item">
+                    <label htmlFor="scheduleColor">일정 분류</label>
+                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "8px" }}>
+                        {isReadOnly
+                            ?  // 읽기 전용일 때: 선택된 색상 하나만 보여주기
+                            colorOptions
+                                .filter(color => color.scheduleColorNo === selectedColor)
+                                .map(color => (
+                                    <div
+                                        key={color.scheduleColorNo}
+                                        style={{
+                                            backgroundColor: `${color.scheduleColor}1A`,
+                                            padding: "8px 12px",
+                                            borderRadius: "6px",
+                                            border: `2px solid ${color.scheduleColor}`,
+                                            color: color.scheduleColor,
+                                            fontWeight: "bold",
+                                            cursor: "default"
+                                        }}
+                                    >
+                                        {color.scheduleColorName}
+                                    </div>
+                                ))
+                            :  // 수정/생성 모드일 때: 전체 리스트 보여주기
+                            colorOptions.map(color => {
+                                const isSelected = selectedColor === color.scheduleColorNo;
+                                return (
+                                    <div
+                                        key={color.scheduleColorNo ?? color.scheduleColorName}
+                                        onClick={() => setSelectedColor(color.scheduleColorNo || null)}
+                                        style={{
+                                            backgroundColor: `${color.scheduleColor}1A`,
+                                            padding: "8px 12px",
+                                            borderRadius: "6px",
+                                            cursor: "pointer",
+                                            border: isSelected ? `2px solid ${color.scheduleColor}` : "1px solid #ccc",
+                                            color: color.scheduleColor,
+                                            fontWeight: "bold"
+                                        }}
+                                    >
+                                        {color.scheduleColorName}
+                                    </div>
+                                );
+                            })}
+                    </div>
+                </div>
+
+                {isAdmin && (
+                    <div className="button-row">
+                        <button
+                            className="button1"
+                            onClick={handleSave}
+                            disabled={isReadOnly || !title || !!error}
+                        >
+                            저장
+                        </button>
+                    </div>
+                 )}
+
+                </div>
+        </div>
+    );
 }

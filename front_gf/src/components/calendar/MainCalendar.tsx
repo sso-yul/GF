@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAdminCheck } from "../../stores/useAdminCheck";
 import { useFetchHolidays } from "../../stores/useFetchHolidays";
 import {
     Calendar,
     dateFnsLocalizer,
     Views,
+    SlotInfo
 } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -17,6 +18,8 @@ import CustomToolbar from "./CustomToolbar";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import Modal from "../global/Modal";
 import Schedule from "./Schedule";
+import { getSchedule } from "../../api/api.calendar";
+
 // 이벤트 타입
 export interface CalendarEvent {
     id: number;
@@ -25,8 +28,8 @@ export interface CalendarEvent {
     end: Date;
     allDay?: boolean;
     resource?: any;
-    type: "HOLIDAY" | "USER"; // 통합된 이벤트 타입
-    editable?: boolean; // 편집 가능 여부 (드래그, 리사이즈 등)
+    type: "HOLIDAY" | "USER";
+    editable?: boolean;
 }
 
 // 드래그/리사이즈 타입
@@ -55,11 +58,6 @@ const DnDCalendar = withDragAndDrop<CalendarEvent, object>(Calendar);
 type CustomView = "month" | "week" | "day" | "agenda";
 
 
-const colorOptions = {
-
-}
-
-
 export default function MainCalendar() {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [view, setView] = useState<CustomView>("month");
@@ -71,167 +69,174 @@ export default function MainCalendar() {
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | undefined>(undefined);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [selectedDateRange, setSelectedDateRange] = useState<{start: Date; end: Date} | undefined>(undefined);
+    const [userEvents, setUserEvents] = useState<CalendarEvent[]>([]);
+    const [selectedAllDay, setSelectedAllDay] = useState<boolean>(true);
 
 
-    // 현재 연도의 공휴일 가져오기
     useEffect(() => {
         const currentYear = date.getFullYear().toString();
         fetchHolidaysByYear(currentYear);
     }, [date.getFullYear()]);
 
-    // 기본 이벤트와 공휴일 합치기
     useEffect(() => {
-        const today = new Date();
-        const tomorrow = new Date();
-        tomorrow.setDate(today.getDate() + 1);
+        const loadUserEvents = async () => {
+            try {
+                const start = new Date(date.getFullYear(), 0, 1);
+                const end = new Date(date.getFullYear(), 11, 31);
+                const schedulesDto = await getSchedule(start, end);
 
-        const defaultEvents: CalendarEvent[] = [
-            {
-                id: 1,
-                title: "오늘의 일정",
-                start: today,
-                end: today,
-                allDay: true,
-                type: "USER", // 사용자 생성 일정
-                editable: true
-            },
-            {
-                id: 2,
-                title: "내일 미팅",
-                start: new Date(tomorrow.setHours(10, 0)),
-                end: new Date(tomorrow.setHours(12, 0)),
-                allDay: false,
-                type: "USER", // 사용자 생성 일정
-                editable: true
+                const mappedEvents: CalendarEvent[] = schedulesDto.map(dto => ({
+                    id: dto.scheduleNo!,
+                    title: dto.scheduleTitle,
+                    start: new Date(dto.scheduleStart),
+                    end: new Date(dto.scheduleEnd),
+                    allDay: dto.scheduleAllDay,
+                    type: "USER",
+                    editable: dto.scheduleEditable,
+                    resource: {
+                        schedule_color: dto.scheduleColor,
+                        schedule_content: dto.scheduleContent,
+                        schedule_color_name: dto.scheduleColorName
+                    }
+                }));
+
+                setUserEvents(mappedEvents);
+                
+                
+            } catch (err) {
+                console.error("사용자 일정 로드 실패:", err);
             }
-        ];
-
-        // 기본 이벤트와 공휴일을 합침
-        setEvents([...defaultEvents, ...holidays]);
-    }, [holidays]);
-
-    const handleSelectSlot = ({
-        start,
-        end,
-        slots,
-    }: {
-        start: Date;
-        end: Date;
-        slots: Date[];
-        action: "select" | "click" | "doubleClick";
-    }) => {
-        const title = window.prompt("새 일정 제목:");
-        if (title) {
-            const newEvent: CalendarEvent = {
-                id: events.length + 1,
-                title,
-                start,
-                end,
-                allDay: slots.length === 1,
-                type: "USER",
-                editable: true
-            };
-            setEvents([...events, newEvent]);
-        }
-    };
-
-    const handleSelectEvent = (event: CalendarEvent) => {
-        window.alert(event.title);
-    };
-
-    const handleMoveEvent = ({ event, start, end, isAllDay }: EventDropResizeArgs) => {
-        const idx = events.findIndex((e) => e.id === event.id);
-        if (idx === -1) return;
-
-        const updated = [...events];
-        updated[idx] = {
-            ...event,
-            start,
-            end,
-            allDay: isAllDay ?? event.allDay,
         };
-        setEvents(updated);
-    };
 
+        loadUserEvents();
+        
+    }, [date.getFullYear()]);
 
-        const handleSaveEvent = (eventData: Omit<CalendarEvent, "id">) => {
+    useEffect(() => {
+        setEvents([...holidays, ...userEvents]);
+    }, [holidays, userEvents]);
+
+    const handleSelectSlot = useCallback((slotInfo: SlotInfo) => {
+        if (!isAdmin) return;
+
+        const { start, end, slots, action } = slotInfo;
+
+        const isSingleDate = slots.length === 1 || action === "click";
+
+        const startDate = new Date(start);
+        startDate.setHours(0, 0, 0, 0);
+
+        const endDate = new Date(isSingleDate ? start : end);
+        endDate.setHours(23, 59, 59, 999);
+
+        setSelectedDate(new Date(start));
+        setSelectedDateRange({
+            start: startDate,
+            end: endDate
+        });
+
+        setSelectedAllDay(true);
+        setSelectedEvent(undefined);
+        setIsModalOpen(true);
+    }, [isAdmin]);
+
+    const handleSelectEvent = useCallback((event: CalendarEvent) => {
+        if (isDraggable(event)) {
+            setSelectedEvent(event);
+            setSelectedDate(undefined);
+            setSelectedDateRange(undefined);
+            setIsModalOpen(true);
+        }
+    }, []);
+
+    const handleMoveEvent = useCallback(({ event, start, end, isAllDay }: EventDropResizeArgs) => {
+        setEvents(prev => 
+            prev.map(e => 
+                e.id === event.id 
+                ? { ...e, start: new Date(start), end: new Date(end), allDay: isAllDay ?? e.allDay }
+                : e
+            )
+        );
+    }, []);
+
+    const handleSaveEvent = useCallback((eventData: Omit<CalendarEvent, "id">) => {
         if (selectedEvent) {
             // 기존 이벤트 수정
-            const updatedEvents = events.map(event => 
-                event.id === selectedEvent.id 
-                    ? { ...event, ...eventData, id: selectedEvent.id } 
+            setEvents(prev => 
+                prev.map(event => 
+                    event.id === selectedEvent.id 
+                    ? { ...eventData, id: selectedEvent.id } 
                     : event
+                )
             );
-            setEvents(updatedEvents);
         } else {
             // 새 이벤트 추가
             const newEvent: CalendarEvent = {
                 ...eventData,
-                id: events.length + 1,
+                id: Date.now(), // 유니크한 ID 생성
                 type: "USER",
                 editable: true
             };
-            setEvents([...events, newEvent]);
+            setEvents(prev => [...prev, newEvent]);
         }
-    };
+        
+        // 모달 닫기
+        handleCloseModal();
+    }, [selectedEvent]);
 
-    const handleCloseModal = () => {
+    const handleCloseModal = useCallback(() => {
         setIsModalOpen(false);
         setSelectedEvent(undefined);
         setSelectedDate(undefined);
         setSelectedDateRange(undefined);
-    };
+    }, []);
 
 
-    const handleResizeEvent = ({ event, start, end }: EventDropResizeArgs) => {
-        const idx = events.findIndex((e) => e.id === event.id);
-        if (idx === -1) return;
-
-        const updated = [...events];
-        updated[idx] = {
-            ...event,
-            start,
-            end,
-        };
-        setEvents(updated);
-    };
+    const handleResizeEvent = useCallback(({ event, start, end }: EventDropResizeArgs) => {
+        setEvents(prev => 
+            prev.map(e => 
+                e.id === event.id 
+                ? { ...e, start: new Date(start), end: new Date(end) }
+                : e
+            )
+        );
+    }, []);
 
     // 날짜 변경 핸들러
-    const handleNavigate = (newDate: Date) => {
+    const handleNavigate = useCallback((newDate: Date) => {
         setDate(newDate);
-    };
+    }, []);
 
-    // 내가 직접 입력한 항목만 드래그 가능하도록 설정
-    const isDraggable = (event: CalendarEvent) => {
+    // 날짜 변경 핸들러 (년도)
+    const handleYearChange = useCallback((delta: number) => {
+        const newDate = new Date(date);
+        newDate.setFullYear(date.getFullYear() + delta);
+        setDate(newDate);
+    }, [date]);
+
+    // 드래그 가능 여부 확인
+    const isDraggable = useCallback((event: CalendarEvent) => {
         // 편집 가능 속성이 명시적으로 있는 경우 그 값을 사용
         if (event.editable !== undefined) {
             return event.editable;
         }
         // 타입에 따라 기본값 설정
         return event.type === "USER";
-    };
+    }, []);
 
     return (
         <div style={{ height: "70vh", padding: "1rem" }}>
             <div style={{ marginBottom: "1rem", display: "flex", gap: "0.5rem" }}>
                 <IconButton
                     icon={faAngleLeft}
-                    onClick={() => {
-                        const prevYear = new Date(date);
-                        prevYear.setFullYear(date.getFullYear() - 1);
-                        setDate(prevYear);
-                    }}
+                    onClick={() => handleYearChange(-1)}
                 />
                 <span style={{ margin: "auto 0", fontWeight: "bold" }}>
                     {date.getFullYear()}
                 </span>
                 <IconButton
                     icon={faAngleRight}
-                    onClick={() => {
-                        const prevYear = new Date(date);
-                        prevYear.setFullYear(date.getFullYear() + 1);
-                        setDate(prevYear);
-                    }}
+                    onClick={() => handleYearChange(1)}
                 />
             </div>
             
@@ -269,17 +274,34 @@ export default function MainCalendar() {
                             }
                         };
                     }
-                    if (!isAdmin) {
+                    if (event.type === "USER") {
+                        const color = event.resource?.schedule_color_name || "#000000";
+
+                        // HEX → RGBA 변환
+                        const hexToRGBA = (hex: string, alpha: number) => {
+                            const r = parseInt(hex.slice(1, 3), 16);
+                            const g = parseInt(hex.slice(3, 5), 16);
+                            const b = parseInt(hex.slice(5, 7), 16);
+                            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                        };
+
+                        const overlayColor = hexToRGBA(color, 0.1);
+
                         return {
                             style: {
-                                cursor: "default"
+                                backgroundColor: "#ffffff",
+                                backgroundImage: `linear-gradient(${overlayColor}, ${overlayColor})`,
+                                color: color,
+                                borderRadius: "4px",
+                                cursor: isAdmin ? "pointer" : "default"
                             }
                         };
                     }
+
                     return {};
                 }}
                 messages={{
-                    showMore: (total) => `+${total} 더보기`,
+                    showMore: (total) => `+${total}`,
                 }}
                 formats={{
                     dateFormat: "dd",
@@ -293,6 +315,21 @@ export default function MainCalendar() {
                     toolbar: CustomToolbar
                 }}
             />
+
+            {isModalOpen && (
+                <Modal isOpen={true} title={selectedEvent ? (isAdmin ? "일정 수정" : "일정") : "새 일정"} onClose={handleCloseModal}>
+                    <Schedule 
+                        selectedDate={selectedDate}
+                        dateRange={selectedDateRange}
+                        event={selectedEvent}
+                        onSave={handleSaveEvent}
+                        onClose={handleCloseModal}
+                        readOnly={!isAdmin}
+                        isAdmin={isAdmin}
+                        allDay={true}
+                    />
+                </Modal>
+            )}
         </div>
     );
 }
