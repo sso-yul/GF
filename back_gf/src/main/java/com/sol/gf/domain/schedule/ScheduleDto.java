@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -15,8 +15,8 @@ public class ScheduleDto {
     private long scheduleNo;
     private String scheduleTitle;
     private String scheduleContent;
-    private LocalDateTime scheduleStart;
-    private LocalDateTime scheduleEnd;
+    private ZonedDateTime scheduleStart;
+    private ZonedDateTime scheduleEnd;
     private boolean scheduleAllDay;
     private ScheduleType scheduleType;
     private boolean scheduleEditable;

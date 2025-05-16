@@ -10,6 +10,8 @@ import lombok.Setter;
 
 import javax.security.auth.Refreshable;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Entity
 @Setter
@@ -29,12 +31,12 @@ public class ScheduleEntity {
     private String scheduleContent;
 
     @Column(name = "schedule_start", nullable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime scheduleStart;
+    @Convert(converter = ZonedDateTimeConverter.class)
+    private ZonedDateTime scheduleStart;
 
     @Column(name = "schedule_end", nullable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime scheduleEnd;
+    @Convert(converter = ZonedDateTimeConverter.class)
+    private ZonedDateTime scheduleEnd;
 
     @Column(name = "schedule_allday", nullable = false)
     private Boolean scheduleAllDay = false;
@@ -56,7 +58,7 @@ public class ScheduleEntity {
     }
 
     @Builder
-    public ScheduleEntity(String scheduleTitle, String scheduleContent, LocalDateTime scheduleStart, LocalDateTime scheduleEnd, Boolean scheduleAllDay,
+    public ScheduleEntity(String scheduleTitle, String scheduleContent, ZonedDateTime scheduleStart, ZonedDateTime scheduleEnd, Boolean scheduleAllDay,
                           ScheduleType scheduleType, Boolean scheduleEditable, ScheduleColorEntity scheduleColor) {
         this.scheduleTitle = scheduleTitle;
         this.scheduleContent = scheduleContent;
@@ -68,4 +70,18 @@ public class ScheduleEntity {
         this.scheduleColor = scheduleColor;
     }
 
+    @Converter
+    public static class ZonedDateTimeConverter implements AttributeConverter<ZonedDateTime, LocalDateTime> {
+        @Override
+        public LocalDateTime convertToDatabaseColumn(ZonedDateTime zonedDateTime) {
+            if (zonedDateTime == null) return null;
+            return zonedDateTime.toLocalDateTime();
+        }
+
+        @Override
+        public ZonedDateTime convertToEntityAttribute(LocalDateTime localDateTime) {
+            if (localDateTime == null) return null;
+            return localDateTime.atZone(ZoneId.of("Asia/Seoul"));
+        }
+    }
 }

@@ -137,17 +137,20 @@ export default function Schedule({
 
             
             if (event?.id) {
-                // 수정 API 호출
-                const updatedSchedule = await modifySchedule(event.id, scheduleData);
+                // 수정 API 호출 - 오류 발생 시 더 많은 정보 기록
+                try {
+                    const updatedSchedule = await modifySchedule(event.id, scheduleData);
+                } catch (apiError) {
+                    throw apiError;
+                }
             } else {
                 // 저장 API 호출
                 const savedSchedule = await saveSchedule(scheduleData);
             }
-            console.log("===", newEvent);
+            
             onSave(newEvent);
             onClose();
         } catch (error) {
-            console.error("일정 저장 실패:", error);
             setError("일정 저장에 실패했습니다.");
         }
     };

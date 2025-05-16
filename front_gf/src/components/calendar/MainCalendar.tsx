@@ -18,7 +18,8 @@ import CustomToolbar from "./CustomToolbar";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import Modal from "../global/Modal";
 import Schedule from "./Schedule";
-import { getSchedule } from "../../api/api.calendar";
+import { getSchedule, modifySchedule } from "../../api/api.calendar";
+import { ScheduleDto, ScheduleType } from "../../stores/types";
 
 // 이벤트 타입
 export interface CalendarEvent {
@@ -71,6 +72,7 @@ export default function MainCalendar() {
     const [selectedDateRange, setSelectedDateRange] = useState<{start: Date; end: Date} | undefined>(undefined);
     const [userEvents, setUserEvents] = useState<CalendarEvent[]>([]);
     const [selectedAllDay, setSelectedAllDay] = useState<boolean>(true);
+    const [isUpdating, setIsUpdating] = useState(false);
 
 
     useEffect(() => {
@@ -78,38 +80,36 @@ export default function MainCalendar() {
         fetchHolidaysByYear(currentYear);
     }, [date.getFullYear()]);
 
+    // 사용자 일정 로드 함수
+    const loadUserEvents = async () => {
+        try {
+            const start = new Date(date.getFullYear(), 0, 1);
+            const end = new Date(date.getFullYear(), 11, 31);
+            const schedulesDto = await getSchedule(start, end);
+
+            const mappedEvents: CalendarEvent[] = schedulesDto.map(dto => ({
+                id: dto.scheduleNo!,
+                title: dto.scheduleTitle,
+                start: new Date(dto.scheduleStart),
+                end: new Date(dto.scheduleEnd),
+                allDay: dto.scheduleAllDay,
+                type: "USER",
+                editable: dto.scheduleEditable,
+                resource: {
+                    schedule_color: dto.scheduleColor,
+                    schedule_content: dto.scheduleContent,
+                    schedule_color_name: dto.scheduleColorName
+                }
+            }));
+
+            setUserEvents(mappedEvents);
+        } catch (err) {
+            console.error("사용자 일정 로드 실패:", err);
+        }
+    };
+
     useEffect(() => {
-        const loadUserEvents = async () => {
-            try {
-                const start = new Date(date.getFullYear(), 0, 1);
-                const end = new Date(date.getFullYear(), 11, 31);
-                const schedulesDto = await getSchedule(start, end);
-
-                const mappedEvents: CalendarEvent[] = schedulesDto.map(dto => ({
-                    id: dto.scheduleNo!,
-                    title: dto.scheduleTitle,
-                    start: new Date(dto.scheduleStart),
-                    end: new Date(dto.scheduleEnd),
-                    allDay: dto.scheduleAllDay,
-                    type: "USER",
-                    editable: dto.scheduleEditable,
-                    resource: {
-                        schedule_color: dto.scheduleColor,
-                        schedule_content: dto.scheduleContent,
-                        schedule_color_name: dto.scheduleColorName
-                    }
-                }));
-
-                setUserEvents(mappedEvents);
-                
-                
-            } catch (err) {
-                console.error("사용자 일정 로드 실패:", err);
-            }
-        };
-
         loadUserEvents();
-        
     }, [date.getFullYear()]);
 
     useEffect(() => {
@@ -149,15 +149,49 @@ export default function MainCalendar() {
         }
     }, []);
 
-    const handleMoveEvent = useCallback(({ event, start, end, isAllDay }: EventDropResizeArgs) => {
-        setEvents(prev => 
-            prev.map(e => 
-                e.id === event.id 
-                ? { ...e, start: new Date(start), end: new Date(end), allDay: isAllDay ?? e.allDay }
-                : e
-            )
-        );
-    }, []);
+    const handleMoveEvent = useCallback(async ({ event, start, end, isAllDay }: EventDropResizeArgs) => {
+        if (!isAdmin || event.type === "HOLIDAY" || isUpdating) return;
+        
+        try {
+            setIsUpdating(true);
+            
+            // 먼저 UI 업데이트
+            setEvents(prev => 
+                prev.map(e => 
+                    e.id === event.id 
+                    ? { ...e, start: new Date(start), end: new Date(end), allDay: isAllDay ?? e.allDay }
+                    : e
+                )
+            );
+
+            // 백엔드 API 호출을 위한 데이터 준비
+            const scheduleData: ScheduleDto = {
+                scheduleTitle: event.title,
+                scheduleContent: event.resource?.schedule_content || "",
+                scheduleStart: new Date(start),
+                scheduleEnd: new Date(end),
+                scheduleAllDay: isAllDay ?? event.allDay ?? false,
+                scheduleType: ScheduleType.USER,
+                scheduleEditable: event.editable ?? true,
+                scheduleColor: event.resource?.schedule_color,
+                scheduleColorName: event.resource?.schedule_color_name
+            };
+
+            // API 호출
+            await modifySchedule(event.id, scheduleData);
+            console.log("일정 이동 성공:", event.id);
+            
+            // 성공 후 일정 다시 로드 (선택사항)
+            await loadUserEvents();
+            
+        } catch (error) {
+            console.error("일정 이동 실패:", error);
+            // 실패 시 원래 상태로 복원
+            await loadUserEvents();
+        } finally {
+            setIsUpdating(false);
+        }
+    }, [isAdmin, isUpdating]);
 
     const handleSaveEvent = useCallback((eventData: Omit<CalendarEvent, "id">) => {
         if (selectedEvent) {
@@ -192,15 +226,43 @@ export default function MainCalendar() {
     }, []);
 
 
-    const handleResizeEvent = useCallback(({ event, start, end }: EventDropResizeArgs) => {
-        setEvents(prev => 
-            prev.map(e => 
-                e.id === event.id 
-                ? { ...e, start: new Date(start), end: new Date(end) }
-                : e
-            )
-        );
-    }, []);
+    const handleResizeEvent = useCallback(async ({ event, start, end }: EventDropResizeArgs) => {
+        if (!isAdmin || event.type === "HOLIDAY" || isUpdating) return;
+        
+        try {
+            setIsUpdating(true);
+            
+            setEvents(prev => 
+                prev.map(e => 
+                    e.id === event.id 
+                    ? { ...e, start: new Date(start), end: new Date(end) }
+                    : e
+                )
+            );
+
+            const scheduleData: ScheduleDto = {
+                scheduleTitle: event.title,
+                scheduleContent: event.resource?.schedule_content || "",
+                scheduleStart: new Date(start),
+                scheduleEnd: new Date(end),
+                scheduleAllDay: event.allDay ?? false,
+                scheduleType: ScheduleType.USER,
+                scheduleEditable: event.editable ?? true,
+                scheduleColor: event.resource?.schedule_color,
+                scheduleColorName: event.resource?.schedule_color_name
+            };
+
+            await modifySchedule(event.id, scheduleData);
+            
+            await loadUserEvents();
+            
+        } catch (error) {
+            console.error("일정 크기 조절 실패:", error);
+            await loadUserEvents();
+        } finally {
+            setIsUpdating(false);
+        }
+    }, [isAdmin, isUpdating]);
 
     // 날짜 변경 핸들러
     const handleNavigate = useCallback((newDate: Date) => {

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -92,7 +93,7 @@ public class ScheduleService {
 
     // 일정 목록 불러오기
     @Transactional
-    public List<ScheduleDto> getSchedules(LocalDateTime start, LocalDateTime end) {
+    public List<ScheduleDto> getSchedules(ZonedDateTime start, ZonedDateTime end) {
         List<ScheduleEntity> schedules = scheduleRepository.findByScheduleStartBetween(start, end);
         return schedules.stream()
                 .map(this::convertToDto)

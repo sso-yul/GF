@@ -36,13 +36,14 @@ export const saveSchedule = async (scheduleData: ScheduleDto): Promise<ScheduleD
 
 export const modifySchedule = async (scheduleNo: number, scheduleData: ScheduleDto): Promise<ScheduleDto> => {
     try {
-        const response = await api.put(`/schedule/modify?scheduleNo=${scheduleNo}`, scheduleData);
+        // 쿼리 파라미터가 아닌 경로 변수 사용
+        const response = await api.put(`/schedule/modify/${scheduleNo}`, scheduleData);
         return response.data;
-    } catch (error) {
-        console.error("일정 수정 실패");
+    } catch (error: any) {
+        console.error("일정 수정 실패", error);
         throw error;
     }
-}
+};
 
 export const getSchedule = async (start: Date, end: Date): Promise<ScheduleDto[]> => {
     try {
